@@ -27,11 +27,11 @@
             android:layout_height="wrap_content"
             android:background="?attr/colorPrimary"
             app:tabIconTint="@color/white"
-            app:tabIndicatorColor="@color/white"
+            app:tabIndicatorColor="@color/accent"
             app:tabIndicatorHeight="3dp"
             app:tabInlineLabel="true"
             app:tabSelectedTextColor="@color/white"
-            app:tabTextColor="@color/grey" />
+            app:tabTextColor="@color/secondary_text" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.viewpager.widget.ViewPager
