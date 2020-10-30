@@ -1,4 +1,4 @@
-package ch.anoop.g_fresh.ui.main.fragment
+package ch.anoop.g_fresh.view.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,18 +7,19 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import ch.anoop.g_fresh.R
-import ch.anoop.g_fresh.ui.view_model.SearchFragmentViewModel
+import ch.anoop.g_fresh.view_model.FavoriteFragmentViewModel
 
-class SearchFragment : Fragment() {
 
-    private lateinit var pageViewModel: SearchFragmentViewModel
+class FavoriteFragment : Fragment() {
 
+    private lateinit var favoriteFragmentViewModel: FavoriteFragmentViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        pageViewModel = ViewModelProvider(this).get(SearchFragmentViewModel::class.java).apply {
-            onLoad()
-        }
+        favoriteFragmentViewModel =
+            ViewModelProvider(this).get(FavoriteFragmentViewModel::class.java).apply {
+                onFragmentCreated()
+            }
     }
 
     override fun onCreateView(

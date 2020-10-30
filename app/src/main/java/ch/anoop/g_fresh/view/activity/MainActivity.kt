@@ -1,10 +1,10 @@
-package ch.anoop.g_fresh.ui.main.activity
+package ch.anoop.g_fresh.view.activity
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager.widget.ViewPager
 import ch.anoop.g_fresh.R
-import ch.anoop.g_fresh.ui.main.adapter.SectionsPagerAdapter
+import ch.anoop.g_fresh.view.adapter.SectionsPagerAdapter
 import com.google.android.material.tabs.TabLayout
 
 class MainActivity : AppCompatActivity() {

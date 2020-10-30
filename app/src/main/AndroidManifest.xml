@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GFresh">
         <activity
-            android:name=".ui.main.activity.MainActivity"
+            android:name="ch.anoop.g_fresh.view.activity.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/Theme.GFresh.NoActionBar">
             <intent-filter>
