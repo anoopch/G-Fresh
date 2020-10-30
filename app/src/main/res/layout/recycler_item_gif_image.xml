@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/constraintLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/giffy_fav_img_view"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_gravity="top|end" />
+
+    <ImageView
+        android:id="@+id/giffy_img_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <TextView
+        android:id="@+id/giffy_name_txt_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="#A9A9A9"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit="1"
+        android:padding="3dp"
+        android:textColor="@color/white" />
+</FrameLayout>
