@@ -1,5 +1,7 @@
 package ch.anoop.g_fresh.api
 
+import androidx.room.Entity
+
 
 /**
  * Data classes representing the response of trending and searching GIFFs Giphy API
@@ -7,6 +9,7 @@ package ch.anoop.g_fresh.api
 
 data class GiphyResponse(val data: List<GiffItem>)
 
+@Entity(tableName = "fav_giffs")
 data class GiffItem(
     val id: String,
     val title: String,
