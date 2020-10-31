@@ -12,7 +12,7 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
 
 /**
- * ViewHolder for the trending GIFF item.
+ * ViewHolder for the GIFF item.
  */
 class TrendingViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
@@ -21,7 +21,7 @@ class TrendingViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val favImageView by lazy { itemView.findViewById<TextView>(R.id.giffy_fav_img_view) }
 
     /**
-     * Binds data to view holder views.
+     * Binds info to the views.
      */
     fun bind(data: GiffItem) {
         favImageView.setOnClickListener {

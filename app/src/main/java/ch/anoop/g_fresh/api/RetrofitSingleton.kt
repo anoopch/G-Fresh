@@ -16,14 +16,8 @@ import java.util.concurrent.TimeUnit
 
 object RetrofitSingleton {
 
-    private const val API_KEY_PARAM = "api_key"
-    private const val API_KEY_VALUE = "IiWPYZdp684tjiCw6mJGT9RgoJLJcSaq"
-
-    private const val LIMIT_PARAM = "limit"
-    private const val LIMIT_VALUE = "10"
-
     private const val BASE_URL = "https://api.giphy.com/v1/gifs/"
-    private const val TIMEOUT_LIMIT_IN_MILLIS = 30000L
+    private const val TIMEOUT_LIMIT_IN_MILLIS = 50000L // 50 seconds
 
     private var retrofit: Retrofit
 
@@ -38,27 +32,23 @@ object RetrofitSingleton {
     private fun getOkHttpClient(): OkHttpClient {
         val okHttpClientBuilder = OkHttpClient.Builder()
 
-        // Intercept API call and add the API key and limit for Giphy
-        okHttpClientBuilder.addInterceptor { chain ->
-            val originalRequest = chain.request()
+        // intercept to add query param to all calls
+        okHttpClientBuilder.addInterceptor(QueryParamInterceptor())
 
-            val newRequestBuilder = originalRequest.newBuilder()
-            newRequestBuilder.addHeader(API_KEY_PARAM, API_KEY_VALUE)
-            newRequestBuilder.addHeader(LIMIT_PARAM, LIMIT_VALUE)
-
-            val request = newRequestBuilder.build()
-            chain.proceed(request)
-        }
+        // Set connection time outs
+        okHttpClientBuilder.connectTimeout(TIMEOUT_LIMIT_IN_MILLIS, TimeUnit.MILLISECONDS)
+        okHttpClientBuilder.readTimeout(TIMEOUT_LIMIT_IN_MILLIS, TimeUnit.MILLISECONDS)
+        okHttpClientBuilder.writeTimeout(TIMEOUT_LIMIT_IN_MILLIS, TimeUnit.MILLISECONDS)
 
         // Log the responses for DEBUG build apps
+        val loggingInterceptor = HttpLoggingInterceptor()
         if (BuildConfig.DEBUG) {
-            val loggingInterceptor = HttpLoggingInterceptor()
-            loggingInterceptor.level = HttpLoggingInterceptor.Level.HEADERS
-            okHttpClientBuilder.connectTimeout(TIMEOUT_LIMIT_IN_MILLIS, TimeUnit.MILLISECONDS)
-            okHttpClientBuilder.readTimeout(TIMEOUT_LIMIT_IN_MILLIS, TimeUnit.MILLISECONDS)
-            okHttpClientBuilder.writeTimeout(TIMEOUT_LIMIT_IN_MILLIS, TimeUnit.MILLISECONDS)
-            okHttpClientBuilder.addInterceptor(loggingInterceptor)
+            loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
+        } else {
+            loggingInterceptor.level = HttpLoggingInterceptor.Level.NONE
         }
+        okHttpClientBuilder.addInterceptor(loggingInterceptor)
+
         return okHttpClientBuilder.build()
     }
 
