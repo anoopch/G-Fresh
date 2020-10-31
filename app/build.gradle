@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'kotlin-kapt'
 }
 
 android {
@@ -36,6 +37,8 @@ dependencies {
     // Kotlin
     implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.4.10'
     implementation 'androidx.core:core-ktx:1.3.2'
+    api 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9'
+    api 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9'
 
     // AppCompact Library & Material Design
     implementation 'androidx.appcompat:appcompat:1.2.0'
@@ -44,9 +47,14 @@ dependencies {
     // LiveData and Lifecycle components
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
+    implementation 'androidx.lifecycle:lifecycle-common-java8:2.2.0'
+
+    // Room
+    implementation 'androidx.room:room-ktx:2.2.5'
+    kapt 'androidx.room:room-compiler:2.2.5'
 
     // Data binding
-    annotationProcessor 'com.android.databinding:compiler:3.2.0-alpha10'
+    kapt 'com.android.databinding:compiler:3.2.0-alpha10'
 
     // Anko
     implementation 'org.jetbrains.anko:anko:0.10.5'
@@ -65,7 +73,7 @@ dependencies {
 
     // Glide - Image loading and Gif
     implementation 'com.github.bumptech.glide:glide:4.11.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
+    kapt 'com.github.bumptech.glide:compiler:4.11.0'
 
     implementation 'androidx.multidex:multidex:2.0.1'
 
