@@ -15,7 +15,7 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 
-class SearchFragmentViewModel : ViewModel() {
+class TrendingSearchFragmentViewModel : ViewModel() {
 
     private val compositeDisposable = CompositeDisposable()
 

@@ -14,7 +14,7 @@ import com.bumptech.glide.request.RequestOptions
 /**
  * ViewHolder for the GIFF item.
  */
-class TrendingViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+class GiffImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     private val gifImageView by lazy { itemView.findViewById<ImageView>(R.id.giffy_img_view) }
     private val gifTitle by lazy { itemView.findViewById<TextView>(R.id.giffy_name_txt_view) }
@@ -30,6 +30,8 @@ class TrendingViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         Glide.with(itemView.context)
             .asGif()
+            .placeholder(R.drawable.ic_download)
+            .error(R.drawable.ic_error)
             .load(data.images.fixed_width.url)
             .apply(
                 RequestOptions()

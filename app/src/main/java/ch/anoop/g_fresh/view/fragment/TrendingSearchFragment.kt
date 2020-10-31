@@ -14,13 +14,14 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ch.anoop.g_fresh.R
 import ch.anoop.g_fresh.api.GiphyResponse
-import ch.anoop.g_fresh.view.adapter.TrendingAdapter
-import ch.anoop.g_fresh.view_model.SearchFragmentViewModel
+import ch.anoop.g_fresh.view.adapter.CustomDecorator
+import ch.anoop.g_fresh.view.adapter.GiffImageAdapter
+import ch.anoop.g_fresh.view_model.TrendingSearchFragmentViewModel
 import ch.anoop.g_fresh.view_model.state.ApiResponseResult
 import ch.anoop.g_fresh.view_model.state.ViewState
 import org.jetbrains.anko.textColorResource
 
-class SearchFragment : Fragment() {
+class TrendingSearchFragment : Fragment() {
 
     private val errorTypeNormal: Int = 1
     private val errorTypeAPI: Int = 2
@@ -30,8 +31,8 @@ class SearchFragment : Fragment() {
     private val errorTypeNetworkFailure: Int = 6
     private val errorTypeUnsupportedApiRequest: Int = 7
 
-    private val trendingAdapter by lazy { TrendingAdapter() }
-    private lateinit var viewModel: SearchFragmentViewModel
+    private val trendingAdapter by lazy { GiffImageAdapter() }
+    private lateinit var viewModel: TrendingSearchFragmentViewModel
 
     private lateinit var progressBar: ProgressBar
     private lateinit var giffRecyclerView: RecyclerView
@@ -59,7 +60,7 @@ class SearchFragment : Fragment() {
     }
 
     private fun initViewModel() {
-        viewModel = ViewModelProvider(this).get(SearchFragmentViewModel::class.java).apply {
+        viewModel = ViewModelProvider(this).get(TrendingSearchFragmentViewModel::class.java).apply {
             onFragmentCreated()
         }
     }
@@ -67,12 +68,18 @@ class SearchFragment : Fragment() {
     private fun initViews(inflatedView: View) {
         progressBar = inflatedView.findViewById(R.id.giffy_loading_progress_bar)
         errorTextView = inflatedView.findViewById(R.id.giffy_error_info_txt_view)
+        giffRecyclerView = inflatedView.findViewById(R.id.giffy_recycler_view)
     }
 
     private fun initRecyclerView(inflatedView: View) {
-        giffRecyclerView = inflatedView.findViewById(R.id.giffy_recycler_view)
+
+        val staggeredGridLayoutManager =
+            StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+        staggeredGridLayoutManager.gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_NONE;
+
         giffRecyclerView.apply {
-            layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+            layoutManager = staggeredGridLayoutManager
+            addItemDecoration(CustomDecorator())
             adapter = trendingAdapter
         }
     }
@@ -110,8 +117,11 @@ class SearchFragment : Fragment() {
 
                 is ApiResponseResult.LoadingComplete -> {
                     updateTrendingGiffs(state.value)
-                    println("Loading completed")
                 }
+
+//                is ApiResponseResult.LoadingError->{
+//                   state is ApiResponseResult.LoadingError.ApiError
+//                }
 
 //                ApiResponseResult.LoadingError.ApiError -> {
 //                    showError(errorTypeAPI)
