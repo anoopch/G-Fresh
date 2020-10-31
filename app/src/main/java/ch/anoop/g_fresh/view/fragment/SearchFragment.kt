@@ -54,6 +54,7 @@ class SearchFragment : Fragment() {
         startObservingChangesForUI()
         startObservingChangesForData()
 
+        showProgressBar(true)
         viewModel.loadTrendingGiffs()
     }
 
@@ -107,8 +108,8 @@ class SearchFragment : Fragment() {
             showProgressBar(false)
             when (state) {
 
-                ApiResponseResult.LoadingComplete(state) -> {
-//                    updateTrendingGiffs(state)
+                is ApiResponseResult.LoadingComplete -> {
+                    updateTrendingGiffs(state.value)
                     println("Loading completed")
                 }
 

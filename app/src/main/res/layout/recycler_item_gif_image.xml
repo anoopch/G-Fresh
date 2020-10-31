@@ -13,7 +13,7 @@
     <ImageView
         android:id="@+id/giffy_img_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content" />
 
     <TextView
         android:id="@+id/giffy_name_txt_view"
@@ -22,6 +22,7 @@
         android:layout_gravity="bottom"
         android:background="#A9A9A9"
         android:ellipsize="marquee"
+        android:singleLine="true"
         android:marqueeRepeatLimit="1"
         android:padding="3dp"
         android:textColor="@color/white" />

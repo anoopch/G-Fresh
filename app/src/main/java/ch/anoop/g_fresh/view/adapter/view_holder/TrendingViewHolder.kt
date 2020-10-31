@@ -18,7 +18,7 @@ class TrendingViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     private val gifImageView by lazy { itemView.findViewById<ImageView>(R.id.giffy_img_view) }
     private val gifTitle by lazy { itemView.findViewById<TextView>(R.id.giffy_name_txt_view) }
-    private val favImageView by lazy { itemView.findViewById<TextView>(R.id.giffy_fav_img_view) }
+    private val favImageView by lazy { itemView.findViewById<ImageView>(R.id.giffy_fav_img_view) }
 
     /**
      * Binds info to the views.
