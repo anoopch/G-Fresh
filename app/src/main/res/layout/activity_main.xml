@@ -11,15 +11,27 @@
         android:layout_height="wrap_content"
         android:theme="@style/Theme.GFresh.AppBarOverlay">
 
-        <TextView
-            android:id="@+id/title"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
             android:minHeight="?actionBarSize"
-            android:padding="@dimen/appbar_padding"
-            android:text="@string/app_name"
-            android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title" />
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/app_name"
+                android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/powered_by_giphy"
+                android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle" />
+        </LinearLayout>
+
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabs"
@@ -30,6 +42,7 @@
             app:tabIndicatorColor="@color/accent"
             app:tabIndicatorHeight="3dp"
             app:tabInlineLabel="true"
+            app:tabRippleColor="@color/accent"
             app:tabSelectedTextColor="@color/white"
             app:tabTextColor="@color/secondary_text" />
     </com.google.android.material.appbar.AppBarLayout>

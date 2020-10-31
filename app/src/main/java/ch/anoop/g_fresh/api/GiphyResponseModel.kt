@@ -10,9 +10,7 @@ data class GiphyResponse(val data: List<GiffItem>)
 data class GiffItem(val title: String, val images: Image, var isFavorite: Boolean = false)
 
 data class Image(
-    val fixed_width: ImageSize,
-    val fixed_height: ImageSize,
-    val original: ImageSize
+    val fixed_width_downsampled: ImageSize
 )
 
-data class ImageSize(val url: String)
+data class ImageSize(val height: String, val width: String, val url: String)

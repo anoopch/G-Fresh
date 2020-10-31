@@ -32,7 +32,7 @@ class GiffImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             .asGif()
             .placeholder(R.drawable.ic_download)
             .error(R.drawable.ic_error)
-            .load(data.images.fixed_width.url)
+            .load(data.images.fixed_width_downsampled.url)
             .apply(
                 RequestOptions()
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
