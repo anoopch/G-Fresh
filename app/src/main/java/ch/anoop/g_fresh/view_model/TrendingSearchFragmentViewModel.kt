@@ -2,6 +2,7 @@ package ch.anoop.g_fresh.view_model
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import ch.anoop.g_fresh.api.GiffItem
 import ch.anoop.g_fresh.api.GiphyResponse
 import ch.anoop.g_fresh.api.RetrofitSingleton
 import ch.anoop.g_fresh.view_model.repo.LocalDataSource
@@ -71,5 +72,9 @@ class TrendingSearchFragmentViewModel : ViewModel() {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(::onApiRequestComplete, ::onError)
             .composeDisposable()
+    }
+
+    fun updateFavoriteButtonClicked(clickedGiffImage: GiffItem) {
+        println(clickedGiffImage.title)
     }
 }

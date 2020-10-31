@@ -35,7 +35,7 @@ class TrendingSearchFragment : Fragment(), FavoriteClickListener {
     private val errorTypeNetworkFailure: Int = 6
     private val errorTypeUnsupportedApiRequest: Int = 7
 
-    private val giffImageAdapter by lazy { GiffImageAdapter() }
+    private val giffImageAdapter by lazy { GiffImageAdapter(this) }
     private lateinit var viewModel: TrendingSearchFragmentViewModel
 
     private lateinit var progressBar: ProgressBar
@@ -44,8 +44,8 @@ class TrendingSearchFragment : Fragment(), FavoriteClickListener {
     private lateinit var searchView: SearchView
 
 
-    override fun onFavoriteButtonClicked(clickedGiffImage: GiffItem) {
-
+    override fun onFavoriteButtonClicked(clickedGiffImage: GiffItem, adapterPosition: Int) {
+        viewModel.updateFavoriteButtonClicked(clickedGiffImage)
     }
 
     override fun onCreateView(

@@ -26,9 +26,9 @@ class FavoriteFragment : Fragment(), FavoriteClickListener {
     private lateinit var giffRecyclerView: RecyclerView
     private lateinit var errorTextView: TextView
 
-    private val giffImageAdapter by lazy { GiffImageAdapter() }
+    private val giffImageAdapter by lazy { GiffImageAdapter(this) }
 
-    override fun onFavoriteButtonClicked(clickedGiffImage: GiffItem) {
+    override fun onFavoriteButtonClicked(clickedGiffImage: GiffItem, adapterPosition: Int) {
 
     }
 

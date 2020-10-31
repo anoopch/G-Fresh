@@ -7,7 +7,12 @@ package ch.anoop.g_fresh.api
 
 data class GiphyResponse(val data: List<GiffItem>)
 
-data class GiffItem(val title: String, val images: Image, var isFavorite: Boolean = false)
+data class GiffItem(
+    val id: String,
+    val title: String,
+    val images: Image,
+    var isFavorite: Boolean = false
+)
 
 data class Image(
     val fixed_width_downsampled: ImageSize
