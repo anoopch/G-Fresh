@@ -81,7 +81,7 @@ class TrendingSearchFragment : Fragment() {
 
         val staggeredGridLayoutManager =
             StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
-        staggeredGridLayoutManager.gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_NONE;
+        staggeredGridLayoutManager.gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_NONE
 
         giffRecyclerView.apply {
             layoutManager = staggeredGridLayoutManager
@@ -150,29 +150,9 @@ class TrendingSearchFragment : Fragment() {
                     updateTrendingGiffs(state.value)
                 }
 
-//                is ApiResponseResult.LoadingError->{
-//                   state is ApiResponseResult.LoadingError.ApiError
-//                }
-
-//                ApiResponseResult.LoadingError.ApiError -> {
-//                    showError(errorTypeAPI)
-//                }
-//
-//                ApiResponseResult.LoadingError.InvalidApiResponseError -> {
-//                    showError(errorTypeAPIResponseInvalid)
-//                }
-//
-//                ApiResponseResult.LoadingError.ConnectionTimeoutError -> {
-//                    showError(errorTypeConnectionTimeOut)
-//                }
-//
-//                ApiResponseResult.LoadingError.NetworkFailure -> {
-//                    showError(errorTypeNetworkFailure)
-//                }
-//
-//                ApiResponseResult.LoadingError.UnSupportedOperationError.UnSupportedError -> {
-//                    showError(errorTypeUnsupportedApiRequest)
-//                }
+                is ApiResponseResult.LoadingFailed -> {
+                    showError(errorTypeAPI)
+                }
 
                 else -> {
                     showError(errorTypeNormal)
