@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="@color/secondary_text">
 
-    <ch.anoop.g_fresh.view.CustomSearchView
+    <ch.anoop.g_fresh.view.custom.CustomSearchView
         android:id="@+id/giffy_search_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

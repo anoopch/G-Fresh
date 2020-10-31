@@ -14,10 +14,16 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
+import java.net.SocketTimeoutException
 
 class TrendingSearchFragmentViewModel : ViewModel() {
 
     private val compositeDisposable = CompositeDisposable()
+
+    private val repository by lazy {
+        val api = RetrofitSingleton.getGiphyApiService()
+        Repository(RestfulDataSource(api), LocalDataSource())
+    }
 
     private val _dataEvent by lazy { SingleMutableLiveData<ApiResponseResult<GiphyResponse>>() }
     val dataUpdatedEvent: LiveData<ApiResponseResult<GiphyResponse>> get() = _dataEvent
@@ -25,38 +31,24 @@ class TrendingSearchFragmentViewModel : ViewModel() {
     private val _viewStateEvent by lazy { SingleMutableLiveData<ViewState>() }
     val viewStateChangeEvent: LiveData<ViewState> get() = _viewStateEvent
 
-    private val repository by lazy {
-        val api = RetrofitSingleton.getGiphyApiService()
-        Repository(RestfulDataSource(api), LocalDataSource())
-    }
-
     override fun onCleared() {
         super.onCleared()
         compositeDisposable.clear()
     }
 
-    fun onFragmentCreated() {
-        println("Search/Trending Fragment created")
-    }
-
-    fun loadTrendingGiffs() {
-        println("Fetching Trending")
-        repository.loadTrending()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(::onApiRequestComplete, ::onError)
-            .composeDisposable()
-    }
-
     private fun onApiRequestComplete(trending: GiphyResponse) {
         if (trending.data.isEmpty()) {
-            println("Empty test result")
+            _viewStateEvent.postValue(ViewState.NoData)
         } else {
             _dataEvent.postValue(ApiResponseResult.LoadingComplete(trending))
         }
     }
 
     private fun onError(error: Throwable) {
+        if (error is SocketTimeoutException) {
+            _viewStateEvent.postValue(ViewState.Error)
+            _dataEvent.postValue(ApiResponseResult.LoadingFailed(null))
+        }
         println("Error - unable to load")
         error.printStackTrace()
     }
@@ -72,4 +64,12 @@ class TrendingSearchFragmentViewModel : ViewModel() {
             .composeDisposable()
     }
 
+    fun loadTrendingGiffs() {
+        println("Fetching Trending")
+        repository.loadTrending()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(::onApiRequestComplete, ::onError)
+            .composeDisposable()
+    }
 }

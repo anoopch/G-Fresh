@@ -16,15 +16,16 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ch.anoop.g_fresh.R
-import ch.anoop.g_fresh.api.GiphyResponse
+import ch.anoop.g_fresh.api.GiffItem
 import ch.anoop.g_fresh.view.adapter.CustomDecorator
 import ch.anoop.g_fresh.view.adapter.GiffImageAdapter
+import ch.anoop.g_fresh.view.custom.FavoriteClickListener
 import ch.anoop.g_fresh.view_model.TrendingSearchFragmentViewModel
 import ch.anoop.g_fresh.view_model.state.ApiResponseResult
 import ch.anoop.g_fresh.view_model.state.ViewState
 import org.jetbrains.anko.textColorResource
 
-class TrendingSearchFragment : Fragment() {
+class TrendingSearchFragment : Fragment(), FavoriteClickListener {
 
     private val errorTypeNormal: Int = 1
     private val errorTypeAPI: Int = 2
@@ -34,13 +35,18 @@ class TrendingSearchFragment : Fragment() {
     private val errorTypeNetworkFailure: Int = 6
     private val errorTypeUnsupportedApiRequest: Int = 7
 
-    private val trendingAdapter by lazy { GiffImageAdapter() }
+    private val giffImageAdapter by lazy { GiffImageAdapter() }
     private lateinit var viewModel: TrendingSearchFragmentViewModel
 
     private lateinit var progressBar: ProgressBar
     private lateinit var giffRecyclerView: RecyclerView
     private lateinit var errorTextView: TextView
     private lateinit var searchView: SearchView
+
+
+    override fun onFavoriteButtonClicked(clickedGiffImage: GiffItem) {
+
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -65,9 +71,7 @@ class TrendingSearchFragment : Fragment() {
     }
 
     private fun initViewModel() {
-        viewModel = ViewModelProvider(this).get(TrendingSearchFragmentViewModel::class.java).apply {
-            onFragmentCreated()
-        }
+        viewModel = ViewModelProvider(this).get(TrendingSearchFragmentViewModel::class.java)
     }
 
     private fun initViews(inflatedView: View) {
@@ -86,7 +90,7 @@ class TrendingSearchFragment : Fragment() {
         giffRecyclerView.apply {
             layoutManager = staggeredGridLayoutManager
             addItemDecoration(CustomDecorator())
-            adapter = trendingAdapter
+            adapter = giffImageAdapter
         }
     }
 
@@ -102,7 +106,7 @@ class TrendingSearchFragment : Fragment() {
                 }
 
                 showProgressBar(true)
-                trendingAdapter.updateNewTrends(emptyList(), true)
+                giffImageAdapter.updateNewTrends(emptyList(), true)
                 searchView.clearFocus()
                 searchView.hideKeyboard()
 
@@ -147,7 +151,7 @@ class TrendingSearchFragment : Fragment() {
             when (state) {
 
                 is ApiResponseResult.LoadingComplete -> {
-                    updateTrendingGiffs(state.value)
+                    giffImageAdapter.updateNewTrends(state.value.data, false)
                 }
 
                 is ApiResponseResult.LoadingFailed -> {
@@ -159,10 +163,6 @@ class TrendingSearchFragment : Fragment() {
                 }
             }
         })
-    }
-
-    private fun updateTrendingGiffs(trendingResponse: GiphyResponse) {
-        trendingAdapter.updateNewTrends(trendingResponse.data, false)
     }
 
     private fun showError(errorType: Int) {
@@ -202,4 +202,5 @@ class TrendingSearchFragment : Fragment() {
         val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(windowToken, 0)
     }
+
 }

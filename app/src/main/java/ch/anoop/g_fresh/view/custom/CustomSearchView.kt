@@ -1,4 +1,4 @@
-package ch.anoop.g_fresh.view
+package ch.anoop.g_fresh.view.custom
 
 import android.content.Context
 import android.util.AttributeSet
