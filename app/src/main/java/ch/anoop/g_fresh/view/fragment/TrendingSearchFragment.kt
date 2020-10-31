@@ -1,5 +1,6 @@
 package ch.anoop.g_fresh.view.fragment
 
+import android.app.Application
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -71,7 +72,10 @@ class TrendingSearchFragment : Fragment(), FavoriteClickListener {
     }
 
     private fun initViewModel() {
-        viewModel = ViewModelProvider(this).get(TrendingSearchFragmentViewModel::class.java)
+        viewModel = ViewModelProvider(
+            this,
+            ViewModelProvider.AndroidViewModelFactory(context?.applicationContext as Application)
+        ).get(TrendingSearchFragmentViewModel::class.java)
     }
 
     private fun initViews(inflatedView: View) {
@@ -106,7 +110,7 @@ class TrendingSearchFragment : Fragment(), FavoriteClickListener {
                 }
 
                 showProgressBar(true)
-                giffImageAdapter.updateNewTrends(emptyList(), true)
+                giffImageAdapter.updateNewItems(emptyList(), true)
                 searchView.clearFocus()
                 searchView.hideKeyboard()
 
@@ -120,7 +124,7 @@ class TrendingSearchFragment : Fragment(), FavoriteClickListener {
     }
 
     private fun startObservingChangesForUI() {
-        viewModel.viewStateChangeEvent.observe(this, { state ->
+        viewModel.viewStateChangeEvent.observe(viewLifecycleOwner, { state ->
             when (state) {
                 ViewState.LoadingFresh -> {
                     showProgressBar(true)
@@ -146,12 +150,12 @@ class TrendingSearchFragment : Fragment(), FavoriteClickListener {
     }
 
     private fun startObservingChangesForData() {
-        viewModel.dataUpdatedEvent.observe(this, { state ->
+        viewModel.dataUpdatedEvent.observe(viewLifecycleOwner, { state ->
             showProgressBar(false)
             when (state) {
 
                 is ApiResponseResult.LoadingComplete -> {
-                    giffImageAdapter.updateNewTrends(state.value.data, false)
+                    giffImageAdapter.updateNewItems(state.value.data, false)
                 }
 
                 is ApiResponseResult.LoadingFailed -> {

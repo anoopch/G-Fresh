@@ -1,6 +1,9 @@
 package ch.anoop.g_fresh.api
 
+import androidx.annotation.NonNull
+import androidx.room.Embedded
 import androidx.room.Entity
+import androidx.room.PrimaryKey
 
 
 /**
@@ -11,13 +14,15 @@ data class GiphyResponse(val data: List<GiffItem>)
 
 @Entity(tableName = "fav_giffs")
 data class GiffItem(
-    val id: String,
+    @NonNull @PrimaryKey val id: String,
     val title: String,
+    @Embedded
     val images: Image,
     var isFavorite: Boolean = false
 )
 
 data class Image(
+    @Embedded
     val fixed_width_downsampled: ImageSize
 )
 

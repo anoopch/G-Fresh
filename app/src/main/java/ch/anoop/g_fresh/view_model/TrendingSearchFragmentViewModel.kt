@@ -1,10 +1,14 @@
 package ch.anoop.g_fresh.view_model
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import ch.anoop.g_fresh.api.GiffItem
 import ch.anoop.g_fresh.api.GiphyResponse
 import ch.anoop.g_fresh.api.RetrofitSingleton
+import ch.anoop.g_fresh.database.FavoriteDatabaseRepository
+import ch.anoop.g_fresh.database.FavoriteRoomDatabase
 import ch.anoop.g_fresh.view_model.repo.LocalDataSource
 import ch.anoop.g_fresh.view_model.repo.Repository
 import ch.anoop.g_fresh.view_model.repo.RestfulDataSource
@@ -15,11 +19,19 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.net.SocketTimeoutException
 
-class TrendingSearchFragmentViewModel : ViewModel() {
+class TrendingSearchFragmentViewModel(application: Application) : AndroidViewModel(application) {
 
     private val compositeDisposable = CompositeDisposable()
+
+    private val databaseRepository by lazy {
+        val favoriteGiffsDao =
+            FavoriteRoomDatabase.getDatabase(application).favoriteGiffsDao()
+        FavoriteDatabaseRepository(favoriteGiffsDao)
+    }
 
     private val repository by lazy {
         val api = RetrofitSingleton.getGiphyApiService()
@@ -36,6 +48,8 @@ class TrendingSearchFragmentViewModel : ViewModel() {
         super.onCleared()
         compositeDisposable.clear()
     }
+
+    private fun Disposable.composeDisposable() = compositeDisposable.add(this)
 
     private fun onApiRequestComplete(trending: GiphyResponse) {
         if (trending.data.isEmpty()) {
@@ -54,7 +68,6 @@ class TrendingSearchFragmentViewModel : ViewModel() {
         error.printStackTrace()
     }
 
-    private fun Disposable.composeDisposable() = compositeDisposable.add(this)
 
     fun loadSearchForGiff(query: String) {
         println("Fetching Trending")
@@ -75,6 +88,13 @@ class TrendingSearchFragmentViewModel : ViewModel() {
     }
 
     fun updateFavoriteButtonClicked(clickedGiffImage: GiffItem) {
-        println(clickedGiffImage.title)
+        viewModelScope.launch(Dispatchers.IO) {
+            val existingDbId: String? = databaseRepository.checkIfExists(clickedGiffImage.id)
+            if (clickedGiffImage.isFavorite && existingDbId.isNullOrEmpty()) {
+                databaseRepository.insert(clickedGiffImage)
+            } else {
+                databaseRepository.delete(clickedGiffImage)
+            }
+        }
     }
 }

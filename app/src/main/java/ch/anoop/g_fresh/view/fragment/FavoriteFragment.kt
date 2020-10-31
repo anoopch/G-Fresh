@@ -1,5 +1,6 @@
 package ch.anoop.g_fresh.view.fragment
 
+import android.app.Application
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -29,7 +30,7 @@ class FavoriteFragment : Fragment(), FavoriteClickListener {
     private val giffImageAdapter by lazy { GiffImageAdapter(this) }
 
     override fun onFavoriteButtonClicked(clickedGiffImage: GiffItem, adapterPosition: Int) {
-
+        favoriteFragmentViewModel.updateFavoriteButtonClicked(clickedGiffImage)
     }
 
     override fun onCreateView(
@@ -44,11 +45,24 @@ class FavoriteFragment : Fragment(), FavoriteClickListener {
         initViewModel()
         initViews(inflatedView)
         initRecyclerView()
+        startObservingDatabase()
+    }
+
+    private fun startObservingDatabase() {
+        favoriteFragmentViewModel.favGiffItemListLiveData.observe(
+            viewLifecycleOwner, { favoriteItemsList ->
+                giffImageAdapter.updateNewItems(favoriteItemsList, true)
+            }
+        )
     }
 
     private fun initViewModel() {
-        favoriteFragmentViewModel =
-            ViewModelProvider(this).get(FavoriteFragmentViewModel::class.java)
+        favoriteFragmentViewModel = ViewModelProvider(
+            this,
+            ViewModelProvider.AndroidViewModelFactory(context?.applicationContext as Application)
+        ).get(
+            FavoriteFragmentViewModel::class.java
+        )
     }
 
     private fun initViews(inflatedView: View) {

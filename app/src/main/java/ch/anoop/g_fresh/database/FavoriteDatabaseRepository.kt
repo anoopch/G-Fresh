@@ -15,6 +15,10 @@ class FavoriteDatabaseRepository(private val favoriteGiffsDao: FavoriteGiffsDao)
         favoriteGiffsDao.insert(newGiffItem)
     }
 
+    suspend fun checkIfExists(idToCheck: String): String {
+        return favoriteGiffsDao.checkIfExists(idToCheck)
+    }
+
     suspend fun delete(newGiffItem: GiffItem) {
         favoriteGiffsDao.delete(newGiffItem)
     }

@@ -28,7 +28,7 @@ class GiffImageAdapter(private val favoriteClickListener: FavoriteClickListener)
         holder.bind(trendingGiffList[position], this)
     }
 
-    fun updateNewTrends(newTrends: List<GiffItem>, clearExistingList: Boolean) {
+    fun updateNewItems(newTrends: List<GiffItem>, clearExistingList: Boolean) {
 
         if (clearExistingList) {
             trendingGiffList.clear()
