@@ -1,13 +1,16 @@
 package ch.anoop.g_fresh.view.fragment
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
@@ -37,6 +40,7 @@ class TrendingSearchFragment : Fragment() {
     private lateinit var progressBar: ProgressBar
     private lateinit var giffRecyclerView: RecyclerView
     private lateinit var errorTextView: TextView
+    private lateinit var searchView: SearchView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,7 +54,8 @@ class TrendingSearchFragment : Fragment() {
 
         initViewModel()
         initViews(inflatedView)
-        initRecyclerView(inflatedView)
+        initRecyclerView()
+        setupSearchView()
 
         startObservingChangesForUI()
         startObservingChangesForData()
@@ -69,9 +74,10 @@ class TrendingSearchFragment : Fragment() {
         progressBar = inflatedView.findViewById(R.id.giffy_loading_progress_bar)
         errorTextView = inflatedView.findViewById(R.id.giffy_error_info_txt_view)
         giffRecyclerView = inflatedView.findViewById(R.id.giffy_recycler_view)
+        searchView = inflatedView.findViewById(R.id.giffy_search_view)
     }
 
-    private fun initRecyclerView(inflatedView: View) {
+    private fun initRecyclerView() {
 
         val staggeredGridLayoutManager =
             StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
@@ -82,6 +88,31 @@ class TrendingSearchFragment : Fragment() {
             addItemDecoration(CustomDecorator())
             adapter = trendingAdapter
         }
+    }
+
+    private fun setupSearchView() {
+        searchView.visibility = VISIBLE
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                if (query.isEmpty()) {
+                    viewModel.loadTrendingGiffs()
+                    searchView.isIconified = true
+                } else {
+                    viewModel.loadSearchForGiff(query)
+                }
+
+                showProgressBar(true)
+                trendingAdapter.updateNewTrends(emptyList(), true)
+                searchView.clearFocus()
+                searchView.hideKeyboard()
+
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                return false
+            }
+        })
     }
 
     private fun startObservingChangesForUI() {
@@ -151,7 +182,7 @@ class TrendingSearchFragment : Fragment() {
     }
 
     private fun updateTrendingGiffs(trendingResponse: GiphyResponse) {
-        trendingAdapter.updateNewTrends(trendingResponse.data)
+        trendingAdapter.updateNewTrends(trendingResponse.data, false)
     }
 
     private fun showError(errorType: Int) {
@@ -185,5 +216,10 @@ class TrendingSearchFragment : Fragment() {
         progressBar.visibility = if (isVisible) VISIBLE else GONE
         giffRecyclerView.visibility = if (isVisible) GONE else VISIBLE
         errorTextView.visibility = GONE
+    }
+
+    private fun View.hideKeyboard() {
+        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(windowToken, 0)
     }
 }

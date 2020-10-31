@@ -40,15 +40,15 @@ class TrendingSearchFragmentViewModel : ViewModel() {
     }
 
     fun loadTrendingGiffs() {
-        println("Fetching API")
+        println("Fetching Trending")
         repository.loadTrending()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(::onTrendingLoadComplete, ::onError)
+            .subscribe(::onApiRequestComplete, ::onError)
             .composeDisposable()
     }
 
-    private fun onTrendingLoadComplete(trending: GiphyResponse) {
+    private fun onApiRequestComplete(trending: GiphyResponse) {
         if (trending.data.isEmpty()) {
             println("Empty test result")
         } else {
@@ -62,5 +62,14 @@ class TrendingSearchFragmentViewModel : ViewModel() {
     }
 
     private fun Disposable.composeDisposable() = compositeDisposable.add(this)
+
+    fun loadSearchForGiff(query: String) {
+        println("Fetching Trending")
+        repository.loadSearch(query)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(::onApiRequestComplete, ::onError)
+            .composeDisposable()
+    }
 
 }

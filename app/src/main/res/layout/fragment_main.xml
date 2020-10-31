@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.appcompat.widget.SearchView
+    <ch.anoop.g_fresh.view.CustomSearchView
         android:id="@+id/giffy_search_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

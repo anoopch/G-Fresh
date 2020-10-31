@@ -8,7 +8,12 @@ class Repository(
 ) {
 
     fun loadTrending() = Single.merge(
-        restfulDataSource.loadData(),
-        localDataSource.loadData()
+        restfulDataSource.loadTrendingGiffs(),
+        localDataSource.loadTrendingGiffs()
+    )
+
+    fun loadSearch(query: String) = Single.merge(
+        restfulDataSource.searchGiffs(query),
+        localDataSource.searchGiffs(query)
     )
 }

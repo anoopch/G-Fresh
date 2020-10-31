@@ -26,7 +26,13 @@ class GiffImageAdapter : RecyclerView.Adapter<GiffImageViewHolder>() {
 
     override fun getItemCount() = trendingGiffList.size
 
-    fun updateNewTrends(newTrends: List<GiffItem>) {
+    fun updateNewTrends(newTrends: List<GiffItem>, clearExistingList: Boolean) {
+
+        if (clearExistingList) {
+            trendingGiffList.clear()
+            notifyDataSetChanged()
+        }
+
         trendingGiffList.addAll(newTrends)
         notifyItemRangeInserted(trendingGiffList.size + 1, newTrends.size)
     }
