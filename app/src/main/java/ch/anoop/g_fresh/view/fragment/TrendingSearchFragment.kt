@@ -105,8 +105,7 @@ class TrendingSearchFragment : Fragment(), FavoriteClickListener {
     private fun startObservingChangesForFav() {
         viewModel.allFavoriteGiffIdsLiveData.observe(
             viewLifecycleOwner, { allFavoriteGiffIdsList ->
-                if (allFavoriteGiffIdsList.isNotEmpty())
-                    giffImageAdapter.updateFavIds(allFavoriteGiffIdsList)
+                giffImageAdapter.updateFavIds(allFavoriteGiffIdsList)
             }
         )
     }
