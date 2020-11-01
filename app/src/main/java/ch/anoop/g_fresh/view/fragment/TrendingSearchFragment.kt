@@ -21,6 +21,7 @@ import ch.anoop.g_fresh.api.GiffItem
 import ch.anoop.g_fresh.view.adapter.CustomDecorator
 import ch.anoop.g_fresh.view.adapter.GiffImageAdapter
 import ch.anoop.g_fresh.view.custom.FavoriteClickListener
+import ch.anoop.g_fresh.view.custom.PaginationScrollListener
 import ch.anoop.g_fresh.view_model.TrendingSearchFragmentViewModel
 import ch.anoop.g_fresh.view_model.state.ApiResponseResult
 import ch.anoop.g_fresh.view_model.state.ViewState
@@ -93,8 +94,13 @@ class TrendingSearchFragment : Fragment(), FavoriteClickListener {
 
         giffRecyclerView.apply {
             layoutManager = staggeredGridLayoutManager
-            addItemDecoration(CustomDecorator())
             adapter = giffImageAdapter
+
+            //For margins
+            addItemDecoration(CustomDecorator())
+
+            //Scroll Listener for pagination
+            addOnScrollListener(PaginationScrollListener(viewModel, staggeredGridLayoutManager))
         }
     }
 
@@ -206,5 +212,4 @@ class TrendingSearchFragment : Fragment(), FavoriteClickListener {
         val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(windowToken, 0)
     }
-
 }

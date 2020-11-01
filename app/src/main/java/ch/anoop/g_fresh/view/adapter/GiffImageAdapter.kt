@@ -8,6 +8,7 @@ import ch.anoop.g_fresh.api.GiffItem
 import ch.anoop.g_fresh.view.adapter.view_holder.GiffImageViewHolder
 import ch.anoop.g_fresh.view.custom.FavoriteClickListener
 
+
 class GiffImageAdapter(private val favoriteClickListener: FavoriteClickListener) :
     RecyclerView.Adapter<GiffImageViewHolder>(), FavoriteClickListener {
 
@@ -46,4 +47,6 @@ class GiffImageAdapter(private val favoriteClickListener: FavoriteClickListener)
 
         favoriteClickListener.onFavoriteButtonClicked(clickedGiffImage, adapterPosition)
     }
+
+
 }

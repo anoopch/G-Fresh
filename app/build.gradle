@@ -52,7 +52,7 @@ dependencies {
 
     // Android - Pagination with RxJava
     implementation 'androidx.paging:paging-runtime-ktx:3.0.0-alpha08'
-    implementation 'androidx.paging:paging-rxjava3-ktx:3.0.0-alpha08'
+    implementation 'androidx.paging:paging-rxjava2-ktx:3.0.0-alpha08'
 
     // Room
     implementation 'androidx.room:room-ktx:2.2.5'

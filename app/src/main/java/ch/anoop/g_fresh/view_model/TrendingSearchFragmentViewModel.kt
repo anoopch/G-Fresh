@@ -97,4 +97,8 @@ class TrendingSearchFragmentViewModel(application: Application) : AndroidViewMod
             }
         }
     }
+
+    fun listScrolled(visibleItemCount: Int, lastVisibleItem: Int, totalItemCount: Int) {
+        println("visibleItemCount: $visibleItemCount, lastVisibleItem: $lastVisibleItem, totalItemCount: $totalItemCount")
+    }
 }
