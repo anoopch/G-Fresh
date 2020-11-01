@@ -31,7 +31,7 @@ class GiffImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
      */
     fun bind(currentGiffItem: GiffItem, favoriteClickListener: FavoriteClickListener) {
         favImageView.setOnClickListener {
-            favoriteClickListener.onFavoriteButtonClicked(currentGiffItem, bindingAdapterPosition)
+            favoriteClickListener.onFavoriteButtonClicked(currentGiffItem, adapterPosition)
 
             val myAnim: Animation = loadAnimation(favImageView.context, R.anim.bounce)
 
