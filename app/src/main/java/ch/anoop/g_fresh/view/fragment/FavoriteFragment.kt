@@ -42,8 +42,12 @@ class FavoriteFragment : Fragment(), FavoriteClickListener {
 
     override fun onViewCreated(inflatedView: View, savedInstanceState: Bundle?) {
         super.onViewCreated(inflatedView, savedInstanceState)
-        initViewModel()
         initViews(inflatedView)
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        initViewModel()
         initRecyclerView()
         startObservingDatabase()
     }

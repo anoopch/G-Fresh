@@ -3,6 +3,7 @@ package ch.anoop.g_fresh.view.fragment
 import android.app.Application
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.*
@@ -23,17 +24,13 @@ import ch.anoop.g_fresh.view.custom.PaginationScrollListener
 import ch.anoop.g_fresh.view_model.TrendingSearchFragmentViewModel
 import ch.anoop.g_fresh.view_model.state.ApiResponseResult
 import ch.anoop.g_fresh.view_model.state.ViewState
-import org.jetbrains.anko.textColorResource
 
 class TrendingSearchFragment : Fragment(), FavoriteClickListener {
 
     private val errorTypeNormal: Int = 1
     private val errorTypeAPI: Int = 2
-    private val errorTypeAPIResponseInvalid: Int = 3
-    private val errorTypeInfo: Int = 4
-    private val errorTypeConnectionTimeOut: Int = 5
-    private val errorTypeNetworkFailure: Int = 6
-    private val errorTypeUnsupportedApiRequest: Int = 7
+    private val errorTypeNoData: Int = 3
+    private val errorTypeNotReachable: Int = 4
 
     private val giffImageAdapter by lazy { GiffImageAdapter(this) }
     private lateinit var viewModel: TrendingSearchFragmentViewModel
@@ -55,12 +52,13 @@ class TrendingSearchFragment : Fragment(), FavoriteClickListener {
     }
 
     override fun onViewCreated(inflatedView: View, savedInstanceState: Bundle?) {
-
-        initViewModel()
+        super.onViewCreated(inflatedView, savedInstanceState)
         initViews(inflatedView)
+    }
 
-        showProgressBar(true)
-
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        initViewModel()
         initRecyclerView()
 
         startObservingChangesForFav()
@@ -117,6 +115,8 @@ class TrendingSearchFragment : Fragment(), FavoriteClickListener {
         searchView.visibility = VISIBLE
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
+                showProgressBar(true)
+
                 if (query.isEmpty()) {
                     viewModel.loadTrendingGiffs(0)
                     searchView.isIconified = true
@@ -124,7 +124,6 @@ class TrendingSearchFragment : Fragment(), FavoriteClickListener {
                     viewModel.loadSearchForGiff(query, 0)
                 }
 
-                showProgressBar(true)
                 giffImageAdapter.updateNewItems(emptyList(), true)
                 searchView.clearFocus()
                 searchView.hideKeyboard()
@@ -141,11 +140,7 @@ class TrendingSearchFragment : Fragment(), FavoriteClickListener {
     private fun startObservingChangesForUI() {
         viewModel.viewStateChangeEvent.observe(viewLifecycleOwner, { state ->
             when (state) {
-                ViewState.LoadingFresh -> {
-                    showProgressBar(true)
-                }
-
-                ViewState.LoadingNext -> {
+                ViewState.LoadingNext, ViewState.LoadingFresh -> {
                     showProgressBar(true)
                 }
 
@@ -155,10 +150,22 @@ class TrendingSearchFragment : Fragment(), FavoriteClickListener {
 
                 ViewState.NoData -> {
                     showProgressBar(false)
+                    showError(errorTypeNoData)
                 }
 
-                ViewState.Error -> {
+                ViewState.Error.InvalidResponse -> {
                     showProgressBar(false)
+                    showError(errorTypeAPI)
+                }
+
+                ViewState.Error.ServerNotReachable -> {
+                    showProgressBar(false)
+                    showError(errorTypeNotReachable)
+                }
+
+                ViewState.Error.GenericError -> {
+                    showProgressBar(false)
+                    showError(errorTypeNormal)
                 }
             }
         })
@@ -173,12 +180,8 @@ class TrendingSearchFragment : Fragment(), FavoriteClickListener {
                     giffImageAdapter.updateNewItems(state.value.data, false)
                 }
 
-                is ApiResponseResult.LoadingFailed -> {
-                    showError(errorTypeAPI)
-                }
-
                 else -> {
-                    showError(errorTypeNormal)
+                    Log.e("FRAG_TREND", "startObservingChangesForData: state = $state")
                 }
             }
         })
@@ -188,14 +191,8 @@ class TrendingSearchFragment : Fragment(), FavoriteClickListener {
         errorTextView.visibility = VISIBLE
         giffRecyclerView.visibility = GONE
         when (errorType) {
-            errorTypeAPI, errorTypeAPIResponseInvalid, errorTypeUnsupportedApiRequest -> {
-                errorTextView.text = getString(R.string.api_error)
-                errorTextView.textColorResource = R.color.error_text
-                errorTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_error, 0, 0, 0)
-            }
-            errorTypeInfo -> {
+            errorTypeNoData -> {
                 errorTextView.text = getString(R.string.no_data_error)
-                errorTextView.textColorResource = R.color.secondary_text
                 errorTextView.setCompoundDrawablesWithIntrinsicBounds(
                     R.drawable.ic_information,
                     0,
@@ -203,9 +200,16 @@ class TrendingSearchFragment : Fragment(), FavoriteClickListener {
                     0
                 )
             }
+            errorTypeAPI -> {
+                errorTextView.text = getString(R.string.api_error)
+                errorTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_error, 0, 0, 0)
+            }
+            errorTypeNotReachable -> {
+                errorTextView.text = getString(R.string.unable_to_reach_server)
+                errorTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_error, 0, 0, 0)
+            }
             else -> {
                 errorTextView.text = getString(R.string.generic_error)
-                errorTextView.textColorResource = R.color.error_text
                 errorTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_error, 0, 0, 0)
             }
         }

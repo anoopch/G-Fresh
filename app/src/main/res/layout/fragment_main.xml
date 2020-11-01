@@ -21,15 +21,15 @@
         android:id="@+id/giffy_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:paddingTop="@dimen/giff_item_margin"
         android:layout_marginBottom="3dp"
+        android:paddingTop="@dimen/giff_item_margin"
         android:paddingBottom="@dimen/giff_item_margin"
-        android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/giffy_loading_progress_bar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/giffy_search_view"
-        tools:visibility="visible" />
+        tools:visibility="gone" />
 
     <TextView
         android:id="@+id/giffy_error_info_txt_view"
@@ -37,13 +37,14 @@
         android:layout_height="wrap_content"
         android:drawablePadding="16dp"
         android:visibility="gone"
+        android:textColor="@color/primary_text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:drawableStartCompat="@drawable/ic_information"
         tools:text="No favorites yet"
-        tools:visibility="visible" />
+        tools:visibility="gone" />
 
     <com.google.android.material.progressindicator.ProgressIndicator
         android:id="@+id/giffy_loading_progress_bar"
@@ -51,7 +52,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:indeterminate="true"
-        android:visibility="gone"
+        android:visibility="visible"
         app:growMode="incoming"
         app:indicatorColors="@array/progress_colors"
         app:layout_constraintBottom_toBottomOf="parent"
