@@ -39,9 +39,6 @@ class GiffImageAdapter(private val favoriteClickListener: FavoriteClickListener)
 
     override fun onFavoriteButtonClicked(clickedGiffImage: GiffItem, adapterPosition: Int) {
         clickedGiffImage.isFavorite = !clickedGiffImage.isFavorite
-        trendingGiffList[adapterPosition] = clickedGiffImage
-        notifyItemChanged(adapterPosition)
-
         favoriteClickListener.onFavoriteButtonClicked(clickedGiffImage, adapterPosition)
     }
 
@@ -65,9 +62,31 @@ class GiffImageAdapter(private val favoriteClickListener: FavoriteClickListener)
     }
 
     fun updateFavIds(allFavoriteGiffIdsList: List<String>) {
+
+        val deletedElements = this.allFavoriteGiffIdsList.minus(allFavoriteGiffIdsList)
+        val addedElements = allFavoriteGiffIdsList.minus(this.allFavoriteGiffIdsList)
+
         this.allFavoriteGiffIdsList.clear()
         this.allFavoriteGiffIdsList.addAll(allFavoriteGiffIdsList)
-        notifyDataSetChanged()
+
+        for (eachDeletedItem in deletedElements) {
+            val index =
+                trendingGiffList.indexOfFirst { it.id == eachDeletedItem } // -1 if not found
+            if (index in 0 until itemCount) {
+                trendingGiffList[index].isFavorite = false
+                notifyItemChanged(index)
+            }
+        }
+
+        for (eachAddedItem in addedElements) {
+            val index = trendingGiffList.indexOfFirst { it.id == eachAddedItem } // -1 if not found
+            if (index in 0 until itemCount) {
+                trendingGiffList[index].isFavorite = true
+                notifyItemChanged(index)
+            }
+        }
+
+
     }
 
 }
