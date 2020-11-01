@@ -1,0 +1,50 @@
+package ch.anoop.g_fresh.view.adapter.view_holder
+
+import android.view.View
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
+import ch.anoop.g_fresh.R
+import ch.anoop.g_fresh.api.GiffItem
+import ch.anoop.g_fresh.view.custom.FavoriteClickListener
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.bumptech.glide.request.RequestOptions
+import org.jetbrains.anko.imageResource
+
+/**
+ * ViewHolder for the GIFF item.
+ */
+class GiffImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
+    private val gifImageView by lazy { itemView.findViewById<ImageView>(R.id.giffy_img_view) }
+    private val gifTitle by lazy { itemView.findViewById<TextView>(R.id.giffy_name_txt_view) }
+    private val favImageView by lazy { itemView.findViewById<ImageView>(R.id.giffy_fav_img_view) }
+
+    /**
+     * Binds info to the views.
+     */
+    fun bind(currentGiffItem: GiffItem, favoriteClickListener: FavoriteClickListener) {
+        favImageView.setOnClickListener {
+            favoriteClickListener.onFavoriteButtonClicked(currentGiffItem, adapterPosition)
+        }
+        favImageView.imageResource =
+            if (currentGiffItem.isFavorite) R.drawable.ic_favorite else R.drawable.ic_no_favorite
+
+        Glide.with(itemView.context)
+            .asGif()
+            .placeholder(R.drawable.ic_download)
+            .error(R.drawable.ic_error)
+            .load(currentGiffItem.images.fixed_width_downsampled.url)
+            .apply(
+                RequestOptions()
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .centerCrop()
+            )
+            .transition(DrawableTransitionOptions.withCrossFade(300))
+            .into(gifImageView)
+
+        gifTitle.text = currentGiffItem.title
+    }
+}

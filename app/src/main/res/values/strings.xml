@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">G-Fresh !</string>
+    <string name="powered_by_giphy">Powered By GIPHY</string>
+    <string name="tab_text_1">Trending</string>
+    <string name="tab_text_2">Favorites</string>
+    <string name="search_hint">search trending and fresh GIFFs</string>
+    <string name="api_error">API Error Occurred</string>
+    <string name="no_data_error">No data found</string>
+    <string name="generic_error">Error Occurred</string>
+</resources>
