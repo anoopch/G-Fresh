@@ -6,7 +6,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.*
+import android.view.View.INVISIBLE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
@@ -145,25 +146,22 @@ class TrendingSearchFragment : Fragment(), FavoriteClickListener {
 
                 ViewState.LoadingComplete -> {
                     showProgressBar(false)
+                    showRecyclerView(true)
                 }
 
                 ViewState.NoData -> {
-                    showProgressBar(false)
                     showError(errorTypeNoData)
                 }
 
                 ViewState.Error.InvalidResponse -> {
-                    showProgressBar(false)
                     showError(errorTypeAPI)
                 }
 
                 ViewState.Error.ServerNotReachable -> {
-                    showProgressBar(false)
                     showError(errorTypeNotReachable)
                 }
 
                 ViewState.Error.GenericError -> {
-                    showProgressBar(false)
                     showError(errorTypeNormal)
                 }
             }
@@ -177,6 +175,7 @@ class TrendingSearchFragment : Fragment(), FavoriteClickListener {
 
                 is ApiResponseResult.LoadingComplete -> {
                     giffImageAdapter.updateNewItems(state.value.data, false)
+                    showRecyclerView(true)
                 }
 
                 else -> {
@@ -188,7 +187,10 @@ class TrendingSearchFragment : Fragment(), FavoriteClickListener {
 
     private fun showError(errorType: Int) {
         errorTextView.visibility = VISIBLE
-        giffRecyclerView.visibility = GONE
+
+        showRecyclerView(false)
+        showProgressBar(false)
+
         when (errorType) {
             errorTypeNoData -> {
                 errorTextView.text = getString(R.string.no_data_error)
@@ -216,9 +218,12 @@ class TrendingSearchFragment : Fragment(), FavoriteClickListener {
 
     private fun showProgressBar(isVisible: Boolean) {
         progressBar.visibility = if (isVisible) VISIBLE else INVISIBLE
-        giffRecyclerView.visibility = if (isVisible) GONE else VISIBLE
-        errorTextView.visibility = GONE
     }
+
+    private fun showRecyclerView(isVisible: Boolean) {
+        giffRecyclerView.visibility = if (isVisible) VISIBLE else INVISIBLE
+    }
+
 
     private fun View.hideKeyboard() {
         val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager

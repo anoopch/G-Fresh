@@ -22,12 +22,14 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="@string/app_name"
+                android:textColor="@color/title_text_color"
                 android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
+                android:textColor="@color/title_text_color"
                 android:text="@string/powered_by_giphy"
                 android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle" />
         </LinearLayout>
@@ -38,12 +40,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="?attr/colorPrimary"
-            app:tabIconTint="@color/white"
+            app:tabIconTint="@color/title_text_color"
             app:tabIndicatorColor="@color/accent"
             app:tabIndicatorHeight="3dp"
             app:tabInlineLabel="true"
             app:tabRippleColor="@color/accent"
-            app:tabSelectedTextColor="@color/white"
+            app:tabSelectedTextColor="@color/title_text_color"
             app:tabTextColor="@color/secondary_text" />
     </com.google.android.material.appbar.AppBarLayout>
 
