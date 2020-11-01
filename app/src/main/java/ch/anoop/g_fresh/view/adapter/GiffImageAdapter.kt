@@ -7,12 +7,13 @@ import ch.anoop.g_fresh.R
 import ch.anoop.g_fresh.api.GiffItem
 import ch.anoop.g_fresh.view.adapter.view_holder.GiffImageViewHolder
 import ch.anoop.g_fresh.view.custom.FavoriteClickListener
+import okhttp3.internal.toImmutableList
 
 
 class GiffImageAdapter(private val favoriteClickListener: FavoriteClickListener) :
     RecyclerView.Adapter<GiffImageViewHolder>(), FavoriteClickListener {
 
-    private val trendingGiffList = mutableListOf<GiffItem>()
+    private var trendingGiffList = mutableListOf<GiffItem>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GiffImageViewHolder {
         return GiffImageViewHolder(
@@ -29,17 +30,6 @@ class GiffImageAdapter(private val favoriteClickListener: FavoriteClickListener)
         holder.bind(trendingGiffList[position], this)
     }
 
-    fun updateNewItems(newTrends: List<GiffItem>, clearExistingList: Boolean) {
-
-        if (clearExistingList) {
-            trendingGiffList.clear()
-            notifyDataSetChanged()
-        }
-
-        trendingGiffList.addAll(newTrends)
-        notifyItemRangeInserted(trendingGiffList.size + 1, newTrends.size)
-    }
-
     override fun onFavoriteButtonClicked(clickedGiffImage: GiffItem, adapterPosition: Int) {
         clickedGiffImage.isFavorite = !clickedGiffImage.isFavorite
         trendingGiffList[adapterPosition] = clickedGiffImage
@@ -48,5 +38,23 @@ class GiffImageAdapter(private val favoriteClickListener: FavoriteClickListener)
         favoriteClickListener.onFavoriteButtonClicked(clickedGiffImage, adapterPosition)
     }
 
+    fun updateNewItems(newTrends: List<GiffItem>, clearExistingList: Boolean) {
+
+        if (clearExistingList) {
+            trendingGiffList.clear()
+            notifyDataSetChanged()
+        }
+        trendingGiffList.addAll(newTrends)
+
+        // Remove duplicates
+        val set = trendingGiffList.toImmutableList()
+        trendingGiffList.clear()
+
+        trendingGiffList.addAll(
+            set.distinctBy { it.id }
+        )
+
+        notifyItemRangeInserted(trendingGiffList.size + 1, newTrends.size)
+    }
 
 }
