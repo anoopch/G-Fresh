@@ -3,8 +3,10 @@
     <string name="powered_by_giphy">Powered By GIPHY</string>
     <string name="tab_text_1">Trending</string>
     <string name="tab_text_2">Favorites</string>
-    <string name="search_hint">search trending and fresh GIFFs</string>
-    <string name="api_error">API Error Occurred</string>
-    <string name="no_data_error">No data found</string>
-    <string name="generic_error">Error Occurred</string>
+    <string name="search_hint">Search 🔥 GIFFs</string>
+    <string name="api_error">Sorry, the server response was invalid ⚡⚡ </string>
+    <string name="no_data_error">Sorry, no data found for the 🔍 search!</string>
+    <string name="generic_error">Sorry, Unable to complete the request now 🌀\nPlease try again</string>
+    <string name="unable_to_reach_server">Unable to reach the web server!\nPlease check your internet connection (🌐)</string>
+    <string name="no_fav_prompt">Sorry, You don\'t have any favorites yet!\nPlease add some using the &#9829; icon</string>
 </resources>

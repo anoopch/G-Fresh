@@ -1,6 +1,7 @@
 package ch.anoop.g_fresh.view_model
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
@@ -9,22 +10,25 @@ import ch.anoop.g_fresh.api.GiphyResponse
 import ch.anoop.g_fresh.api.RetrofitSingleton
 import ch.anoop.g_fresh.database.FavoriteDatabaseRepository
 import ch.anoop.g_fresh.database.FavoriteRoomDatabase
-import ch.anoop.g_fresh.view_model.repo.LocalDataSource
 import ch.anoop.g_fresh.view_model.repo.Repository
 import ch.anoop.g_fresh.view_model.repo.RestfulDataSource
 import ch.anoop.g_fresh.view_model.state.ApiResponseResult
 import ch.anoop.g_fresh.view_model.state.SingleMutableLiveData
 import ch.anoop.g_fresh.view_model.state.ViewState
+import com.google.gson.JsonParseException
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.io.IOException
 import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 
 class TrendingSearchFragmentViewModel(application: Application) : AndroidViewModel(application) {
 
+    private val logTag: String = "TREND_FRAG_V_MODEL"
     private var query: String? = null
     private val compositeDisposable = CompositeDisposable()
     private val visibleItemThreshold = 4
@@ -35,9 +39,9 @@ class TrendingSearchFragmentViewModel(application: Application) : AndroidViewMod
         FavoriteDatabaseRepository(favoriteGiffsDao)
     }
 
-    private val repository by lazy {
+    private val apiRepository by lazy {
         val api = RetrofitSingleton.getGiphyApiService()
-        Repository(RestfulDataSource(api), LocalDataSource())
+        Repository(RestfulDataSource(api))
     }
 
     private val _dataEvent by lazy { SingleMutableLiveData<ApiResponseResult<GiphyResponse>>() }
@@ -65,39 +69,53 @@ class TrendingSearchFragmentViewModel(application: Application) : AndroidViewMod
     }
 
     private fun onError(error: Throwable) {
-        if (error is SocketTimeoutException) {
-            _viewStateEvent.postValue(ViewState.Error)
-            _dataEvent.postValue(ApiResponseResult.LoadingFailed(null))
+        when (error) {
+            is UnknownHostException -> {
+                _viewStateEvent.postValue(ViewState.Error.ServerNotReachable)
+            }
+            is SocketTimeoutException -> {
+                _viewStateEvent.postValue(ViewState.Error.ServerNotReachable)
+            }
+            is IOException -> {
+                _viewStateEvent.postValue(ViewState.Error.ServerNotReachable)
+            }
+            is JsonParseException -> {
+                _viewStateEvent.postValue(ViewState.Error.InvalidResponse)
+            }
+            else -> {
+                _viewStateEvent.postValue(ViewState.Error.GenericError)
+            }
         }
-        println("Error - unable to load")
-        error.printStackTrace()
+        Log.e(logTag, "onError: Failed to load giffs", error)
     }
 
 
     fun loadSearchForGiff(newQuery: String, offset: Int) {
-        println("Fetching Search")
         query = newQuery
-        repository.loadSearch(newQuery, offset)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(::onApiRequestComplete, ::onError)
-            .composeDisposable()
+        viewModelScope.launch(Dispatchers.IO) {
+            apiRepository.loadSearch(newQuery, offset)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(::onApiRequestComplete, ::onError)
+                .composeDisposable()
+        }
     }
 
     fun loadTrendingGiffs(offset: Int) {
-        println("Fetching Trending")
         query = null
-        repository.loadTrending(offset)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(::onApiRequestComplete, ::onError)
-            .composeDisposable()
+        viewModelScope.launch(Dispatchers.IO) {
+            apiRepository.loadTrending(offset)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(::onApiRequestComplete, ::onError)
+                .composeDisposable()
+        }
     }
 
     fun updateFavoriteButtonClicked(clickedGiffImage: GiffItem) {
         viewModelScope.launch(Dispatchers.IO) {
             val existingDbId: String? = databaseRepository.checkIfExists(clickedGiffImage.id)
-            if (clickedGiffImage.isFavorite && existingDbId.isNullOrEmpty()) {
+            if (existingDbId.isNullOrEmpty()) {
                 databaseRepository.insert(clickedGiffImage)
             } else {
                 databaseRepository.delete(clickedGiffImage)
@@ -106,11 +124,15 @@ class TrendingSearchFragmentViewModel(application: Application) : AndroidViewMod
     }
 
     fun listScrolled(visibleItemCount: Int, lastVisibleItemPosition: Int, totalItemCount: Int) {
-        if (visibleItemCount + lastVisibleItemPosition + visibleItemThreshold >= totalItemCount) {
-            if (query.isNullOrEmpty())
-                loadTrendingGiffs(totalItemCount)
-            else
-                loadSearchForGiff(query!!, totalItemCount)
+        viewModelScope.launch(Dispatchers.IO) {
+            if (visibleItemCount + lastVisibleItemPosition + visibleItemThreshold >= totalItemCount) {
+                _viewStateEvent.postValue(ViewState.LoadingNext)
+
+                if (query.isNullOrEmpty())
+                    loadTrendingGiffs(totalItemCount)
+                else
+                    loadSearchForGiff(query!!, totalItemCount)
+            }
         }
     }
 }

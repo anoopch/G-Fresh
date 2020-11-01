@@ -16,12 +16,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupTabsWithViewPager() {
-        val sectionsPagerAdapter = TabAdapter(this, supportFragmentManager)
         val viewPager: ViewPager = findViewById(R.id.view_pager)
-        viewPager.adapter = sectionsPagerAdapter
+        viewPager.adapter = TabAdapter(this, supportFragmentManager)
+
         val tabLayout: TabLayout = findViewById(R.id.tabs)
         tabLayout.setupWithViewPager(viewPager)
-
 
         tabLayout.getTabAt(0)?.setIcon(R.drawable.ic_trending)
         tabLayout.getTabAt(1)?.setIcon(R.drawable.ic_favorite)

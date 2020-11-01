@@ -6,8 +6,13 @@ package ch.anoop.g_fresh.view_model.state
 
 sealed class ViewState {
     object NoData : ViewState()
-    object Error : ViewState()
     object LoadingFresh : ViewState()
     object LoadingComplete : ViewState()
     object LoadingNext : ViewState()
+
+    object Error {
+        object ServerNotReachable : ViewState()
+        object InvalidResponse : ViewState()
+        object GenericError : ViewState()
+    }
 }
