@@ -27,14 +27,13 @@ class GiffImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
      */
     fun bind(currentGiffItem: GiffItem, favoriteClickListener: FavoriteClickListener) {
         favImageView.setOnClickListener {
-            favoriteClickListener.onFavoriteButtonClicked(currentGiffItem, adapterPosition)
+            favoriteClickListener.onFavoriteButtonClicked(currentGiffItem, bindingAdapterPosition)
         }
         favImageView.imageResource =
             if (currentGiffItem.isFavorite) R.drawable.ic_favorite else R.drawable.ic_no_favorite
 
         Glide.with(itemView.context)
             .asGif()
-            .placeholder(R.drawable.ic_download)
             .error(R.drawable.ic_error)
             .load(currentGiffItem.images.fixed_width_downsampled.url)
             .apply(
