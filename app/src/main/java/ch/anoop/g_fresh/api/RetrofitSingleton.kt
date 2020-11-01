@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit
 
 
 /**
- * Retrofit Singleton that handles all the network setup for API calls.
+ * Retrofit Singleton that handles all the network operations for the API calls.
  */
 
 object RetrofitSingleton {
@@ -21,6 +21,7 @@ object RetrofitSingleton {
 
     private var retrofit: Retrofit
 
+    // Setup the httpClient on init
     init {
         retrofit = Retrofit.Builder().baseUrl(BASE_URL)
             .client(getOkHttpClient())

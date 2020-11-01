@@ -31,7 +31,6 @@ class TrendingSearchFragmentViewModel(application: Application) : AndroidViewMod
     private val logTag: String = "TREND_FRAG_V_MODEL"
     private var query: String? = null
     private val compositeDisposable = CompositeDisposable()
-    private val visibleItemThreshold = 4
 
     private val databaseRepository by lazy {
         val favoriteGiffsDao =
@@ -123,16 +122,15 @@ class TrendingSearchFragmentViewModel(application: Application) : AndroidViewMod
         }
     }
 
-    fun listScrolled(visibleItemCount: Int, lastVisibleItemPosition: Int, totalItemCount: Int) {
+    fun listScrolled(totalItemCount: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            if (visibleItemCount + lastVisibleItemPosition + visibleItemThreshold >= totalItemCount) {
-                _viewStateEvent.postValue(ViewState.LoadingNext)
 
-                if (query.isNullOrEmpty())
-                    loadTrendingGiffs(totalItemCount)
-                else
-                    loadSearchForGiff(query!!, totalItemCount)
-            }
+            _viewStateEvent.postValue(ViewState.LoadingNext)
+
+            if (query.isNullOrEmpty())
+                loadTrendingGiffs(totalItemCount)
+            else
+                loadSearchForGiff(query!!, totalItemCount)
         }
     }
 }

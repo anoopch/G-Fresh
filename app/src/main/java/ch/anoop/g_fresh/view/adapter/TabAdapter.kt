@@ -8,6 +8,10 @@ import ch.anoop.g_fresh.R
 import ch.anoop.g_fresh.view.fragment.FavoriteFragment
 import ch.anoop.g_fresh.view.fragment.TrendingSearchFragment
 
+/**
+ * Adapter for handling the tabs in the MainActivity
+ *      -   Holds reference to the two tab fragments
+ */
 class TabAdapter(private val context: Context, fm: FragmentManager) :
     FragmentPagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
 

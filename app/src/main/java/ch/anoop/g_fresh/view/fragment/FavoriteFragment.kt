@@ -39,7 +39,7 @@ class FavoriteFragment : Fragment(), FavoriteClickListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_main, container, false)
+        return inflater.inflate(R.layout.fragment_search_trending_fav, container, false)
     }
 
     override fun onViewCreated(inflatedView: View, savedInstanceState: Bundle?) {

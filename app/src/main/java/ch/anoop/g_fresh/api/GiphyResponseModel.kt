@@ -5,9 +5,11 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-
 /**
- * Data classes representing the response of trending and searching GIFFs Giphy API
+ * Data classes representing the response of  Giphy API
+ * Same response for both trending and searching API
+ *
+ * Class also contains Annotations for Room
  */
 
 data class GiphyResponse(val data: List<GiffItem>)

@@ -16,12 +16,14 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
 import org.jetbrains.anko.imageResource
 
-
 /**
  * ViewHolder for the GIFF item.
  */
 class GiffImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
+    /**
+     * View elements from the layout
+     */
     private val gifImageView by lazy { itemView.findViewById<ImageView>(R.id.giffy_img_view) }
     private val gifTitle by lazy { itemView.findViewById<TextView>(R.id.giffy_name_txt_view) }
     private val favImageView by lazy { itemView.findViewById<ImageView>(R.id.giffy_fav_img_view) }
@@ -30,12 +32,15 @@ class GiffImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
      * Binds info to the views.
      */
     fun bind(currentGiffItem: GiffItem, favoriteClickListener: FavoriteClickListener) {
+
+        // Fav button click
         favImageView.setOnClickListener {
             favoriteClickListener.onFavoriteButtonClicked(currentGiffItem, adapterPosition)
 
-            val myAnim: Animation = loadAnimation(favImageView.context, R.anim.bounce)
+            // Animation for button
+            val myAnim: Animation = loadAnimation(favImageView.context, R.anim.fav_view_bounce)
 
-            // Use bounce interpolator with amplitude 0.2 and frequency 20
+            // Use bounce interpolator with amplitude 0.3 and frequency 24.0
             val interpolator = MyBounceInterpolator(0.3, 24.0)
             myAnim.interpolator = interpolator
 
@@ -44,6 +49,7 @@ class GiffImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         favImageView.imageResource =
             if (currentGiffItem.isFavorite) R.drawable.ic_favorite else R.drawable.ic_no_favorite
 
+        // Giff Loading using Glide
         Glide.with(itemView.context)
             .asGif()
             .error(R.drawable.ic_error)
@@ -56,6 +62,7 @@ class GiffImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             .transition(DrawableTransitionOptions.withCrossFade(200))
             .into(gifImageView)
 
+        // Sets the title of the Image
         gifTitle.text = currentGiffItem.title
     }
 }
