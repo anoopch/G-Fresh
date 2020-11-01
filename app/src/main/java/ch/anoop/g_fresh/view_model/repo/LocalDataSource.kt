@@ -5,11 +5,11 @@ import io.reactivex.rxjava3.core.Single
 
 class LocalDataSource : DataSource {
 
-    override fun loadTrendingGiffs(): Single<GiphyResponse> {
+    override fun loadTrendingGiffs(offset: Int): Single<GiphyResponse> {
         return Single.fromCallable { GiphyResponse((emptyList())) }
     }
 
-    override fun searchGiffs(query: String): Single<GiphyResponse> {
+    override fun searchGiffs(query: String, offset: Int): Single<GiphyResponse> {
         return Single.fromCallable { GiphyResponse((emptyList())) }
     }
 

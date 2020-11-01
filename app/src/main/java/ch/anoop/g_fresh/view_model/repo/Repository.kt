@@ -7,13 +7,13 @@ class Repository(
     private val localDataSource: LocalDataSource
 ) {
 
-    fun loadTrending() = Single.merge(
-        restfulDataSource.loadTrendingGiffs(),
-        localDataSource.loadTrendingGiffs()
+    fun loadTrending(offset: Int) = Single.merge(
+        restfulDataSource.loadTrendingGiffs(offset),
+        localDataSource.loadTrendingGiffs(offset)
     )
 
-    fun loadSearch(query: String) = Single.merge(
-        restfulDataSource.searchGiffs(query),
-        localDataSource.searchGiffs(query)
+    fun loadSearch(query: String, offset: Int) = Single.merge(
+        restfulDataSource.searchGiffs(query, offset),
+        localDataSource.searchGiffs(query, offset)
     )
 }

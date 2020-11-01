@@ -13,9 +13,9 @@ class PaginationScrollListener(
         super.onScrolled(recyclerView, dx, dy)
         if (isLastItemDisplaying(recyclerView)) {
 
-            val totalItemCount = staggeredGridLayoutManager.itemCount
             val visibleItemCount = staggeredGridLayoutManager.childCount
             val lastVisibleItem = getLastVisibleItem(recyclerView)
+            val totalItemCount = staggeredGridLayoutManager.itemCount
 
             viewModel.listScrolled(
                 visibleItemCount,

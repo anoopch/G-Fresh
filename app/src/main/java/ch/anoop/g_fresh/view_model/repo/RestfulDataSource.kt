@@ -8,12 +8,12 @@ class RestfulDataSource(
     private val apiService: GiphyApiService
 ) : DataSource {
 
-    override fun loadTrendingGiffs(): Single<GiphyResponse> {
-        return apiService.fetchLatestTrending()
+    override fun loadTrendingGiffs(offset: Int): Single<GiphyResponse> {
+        return apiService.fetchLatestTrending(offset)
     }
 
-    override fun searchGiffs(query: String): Single<GiphyResponse> {
-        return apiService.search(query)
+    override fun searchGiffs(query: String, offset: Int): Single<GiphyResponse> {
+        return apiService.search(query, offset)
     }
 
 }

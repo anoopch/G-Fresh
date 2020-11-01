@@ -25,7 +25,9 @@ import java.net.SocketTimeoutException
 
 class TrendingSearchFragmentViewModel(application: Application) : AndroidViewModel(application) {
 
+    private var query: String? = null
     private val compositeDisposable = CompositeDisposable()
+    private val visibleItemThreshold = 4
 
     private val databaseRepository by lazy {
         val favoriteGiffsDao =
@@ -69,18 +71,20 @@ class TrendingSearchFragmentViewModel(application: Application) : AndroidViewMod
     }
 
 
-    fun loadSearchForGiff(query: String) {
-        println("Fetching Trending")
-        repository.loadSearch(query)
+    fun loadSearchForGiff(newQuery: String, offset: Int) {
+        println("Fetching Search")
+        query = newQuery
+        repository.loadSearch(newQuery, offset)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(::onApiRequestComplete, ::onError)
             .composeDisposable()
     }
 
-    fun loadTrendingGiffs() {
+    fun loadTrendingGiffs(offset: Int) {
         println("Fetching Trending")
-        repository.loadTrending()
+        query = null
+        repository.loadTrending(offset)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(::onApiRequestComplete, ::onError)
@@ -98,7 +102,12 @@ class TrendingSearchFragmentViewModel(application: Application) : AndroidViewMod
         }
     }
 
-    fun listScrolled(visibleItemCount: Int, lastVisibleItem: Int, totalItemCount: Int) {
-        println("visibleItemCount: $visibleItemCount, lastVisibleItem: $lastVisibleItem, totalItemCount: $totalItemCount")
+    fun listScrolled(visibleItemCount: Int, lastVisibleItemPosition: Int, totalItemCount: Int) {
+        if (visibleItemCount + lastVisibleItemPosition + visibleItemThreshold >= totalItemCount) {
+            if (query.isNullOrEmpty())
+                loadTrendingGiffs(totalItemCount)
+            else
+                loadSearchForGiff(query!!, totalItemCount)
+        }
     }
 }

@@ -69,7 +69,7 @@ class TrendingSearchFragment : Fragment(), FavoriteClickListener {
         startObservingChangesForData()
 
         showProgressBar(true)
-        viewModel.loadTrendingGiffs()
+        viewModel.loadTrendingGiffs(0)
     }
 
     private fun initViewModel() {
@@ -109,10 +109,10 @@ class TrendingSearchFragment : Fragment(), FavoriteClickListener {
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 if (query.isEmpty()) {
-                    viewModel.loadTrendingGiffs()
+                    viewModel.loadTrendingGiffs(0)
                     searchView.isIconified = true
                 } else {
-                    viewModel.loadSearchForGiff(query)
+                    viewModel.loadSearchForGiff(query, 0)
                 }
 
                 showProgressBar(true)
