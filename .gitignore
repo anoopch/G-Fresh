@@ -84,3 +84,5 @@ lint/generated/
 lint/outputs/
 lint/tmp/
 # lint/reports/
+/app/release/output-metadata.json
+/signing_key
