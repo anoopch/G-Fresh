@@ -14,6 +14,7 @@ class GiffImageAdapter(private val favoriteClickListener: FavoriteClickListener)
     RecyclerView.Adapter<GiffImageViewHolder>(), FavoriteClickListener {
 
     private var trendingGiffList = mutableListOf<GiffItem>()
+    private var allFavoriteGiffIdsList = mutableListOf<String>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GiffImageViewHolder {
         return GiffImageViewHolder(
@@ -27,6 +28,12 @@ class GiffImageAdapter(private val favoriteClickListener: FavoriteClickListener)
     override fun getItemCount() = trendingGiffList.size
 
     override fun onBindViewHolder(holder: GiffImageViewHolder, position: Int) {
+
+        if (allFavoriteGiffIdsList.isNotEmpty()) {
+            trendingGiffList[position].isFavorite =
+                allFavoriteGiffIdsList.contains(trendingGiffList[position].id)
+        }
+
         holder.bind(trendingGiffList[position], this)
     }
 
@@ -55,6 +62,12 @@ class GiffImageAdapter(private val favoriteClickListener: FavoriteClickListener)
         )
 
         notifyItemRangeInserted(trendingGiffList.size + 1, newTrends.size)
+    }
+
+    fun updateFavIds(allFavoriteGiffIdsList: List<String>) {
+        this.allFavoriteGiffIdsList.clear()
+        this.allFavoriteGiffIdsList.addAll(allFavoriteGiffIdsList)
+        notifyDataSetChanged()
     }
 
 }

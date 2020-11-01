@@ -46,6 +46,9 @@ class TrendingSearchFragmentViewModel(application: Application) : AndroidViewMod
     private val _viewStateEvent by lazy { SingleMutableLiveData<ViewState>() }
     val viewStateChangeEvent: LiveData<ViewState> get() = _viewStateEvent
 
+    val allFavoriteGiffIdsLiveData: LiveData<List<String>> =
+        databaseRepository.getAllFavoriteGiffIds
+
     override fun onCleared() {
         super.onCleared()
         compositeDisposable.clear()
