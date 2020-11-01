@@ -5,11 +5,9 @@ import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
+import android.view.View.*
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
@@ -40,11 +38,10 @@ class TrendingSearchFragment : Fragment(), FavoriteClickListener {
     private val giffImageAdapter by lazy { GiffImageAdapter(this) }
     private lateinit var viewModel: TrendingSearchFragmentViewModel
 
-    private lateinit var progressBar: ProgressBar
+    private lateinit var progressBar: View
     private lateinit var giffRecyclerView: RecyclerView
     private lateinit var errorTextView: TextView
     private lateinit var searchView: SearchView
-
 
     override fun onFavoriteButtonClicked(clickedGiffImage: GiffItem, adapterPosition: Int) {
         viewModel.updateFavoriteButtonClicked(clickedGiffImage)
@@ -58,27 +55,21 @@ class TrendingSearchFragment : Fragment(), FavoriteClickListener {
     }
 
     override fun onViewCreated(inflatedView: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(inflatedView, savedInstanceState)
 
         initViewModel()
         initViews(inflatedView)
-        initRecyclerView()
-        startObservingChangesForFav()
-        setupSearchView()
 
+        showProgressBar(true)
+
+        initRecyclerView()
+
+        startObservingChangesForFav()
         startObservingChangesForUI()
         startObservingChangesForData()
-        showProgressBar(true)
-        viewModel.loadTrendingGiffs(0)
-    }
 
-    private fun startObservingChangesForFav() {
-        viewModel.allFavoriteGiffIdsLiveData.observe(
-            viewLifecycleOwner, { allFavoriteGiffIdsList ->
-                if (allFavoriteGiffIdsList.isNotEmpty())
-                    giffImageAdapter.updateFavIds(allFavoriteGiffIdsList)
-            }
-        )
+        setupSearchView()
+
+        viewModel.loadTrendingGiffs(0)
     }
 
     private fun initViewModel() {
@@ -111,6 +102,15 @@ class TrendingSearchFragment : Fragment(), FavoriteClickListener {
             //Scroll Listener for pagination
             addOnScrollListener(PaginationScrollListener(viewModel, staggeredGridLayoutManager))
         }
+    }
+
+    private fun startObservingChangesForFav() {
+        viewModel.allFavoriteGiffIdsLiveData.observe(
+            viewLifecycleOwner, { allFavoriteGiffIdsList ->
+                if (allFavoriteGiffIdsList.isNotEmpty())
+                    giffImageAdapter.updateFavIds(allFavoriteGiffIdsList)
+            }
+        )
     }
 
     private fun setupSearchView() {
@@ -212,7 +212,7 @@ class TrendingSearchFragment : Fragment(), FavoriteClickListener {
     }
 
     private fun showProgressBar(isVisible: Boolean) {
-        progressBar.visibility = if (isVisible) VISIBLE else GONE
+        progressBar.visibility = if (isVisible) VISIBLE else INVISIBLE
         giffRecyclerView.visibility = if (isVisible) GONE else VISIBLE
         errorTextView.visibility = GONE
     }

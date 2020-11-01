@@ -12,4 +12,11 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="ic_launcher_background">#455A64</color>
+
+
+    <!--    Progressbar colors -->
+    <color name="colorGreenBg">#8BC34A</color>
+    <color name="colorBlueBg">#577CFE</color>
+    <color name="colorOrangeBg">#FCAF2A</color>
+    <color name="colorRedBg">#FF6951</color>
 </resources>
