@@ -50,10 +50,6 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
 
-    // Android - Pagination with RxJava
-    implementation 'androidx.paging:paging-runtime-ktx:3.0.0-alpha08'
-    implementation 'androidx.paging:paging-rxjava2-ktx:3.0.0-alpha08'
-
     // Room
     implementation 'androidx.room:room-ktx:2.2.5'
     kapt 'androidx.room:room-compiler:2.2.5'
