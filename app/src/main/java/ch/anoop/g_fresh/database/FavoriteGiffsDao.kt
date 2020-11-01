@@ -10,6 +10,9 @@ interface FavoriteGiffsDao {
     @Query("SELECT * FROM fav_giffs")
     fun getAllFavoriteGiffs(): LiveData<List<GiffItem>>
 
+    @Query("SELECT id FROM fav_giffs")
+    fun getAllFavoriteGiffIds(): LiveData<List<String>>
+
     @Query("SELECT id FROM fav_giffs WHERE id=:queryId")
     suspend fun checkIfExists(queryId: String): String
 

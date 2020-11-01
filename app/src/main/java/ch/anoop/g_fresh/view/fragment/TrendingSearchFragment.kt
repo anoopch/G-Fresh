@@ -63,13 +63,22 @@ class TrendingSearchFragment : Fragment(), FavoriteClickListener {
         initViewModel()
         initViews(inflatedView)
         initRecyclerView()
+        startObservingChangesForFav()
         setupSearchView()
 
         startObservingChangesForUI()
         startObservingChangesForData()
-
         showProgressBar(true)
         viewModel.loadTrendingGiffs(0)
+    }
+
+    private fun startObservingChangesForFav() {
+        viewModel.allFavoriteGiffIdsLiveData.observe(
+            viewLifecycleOwner, { allFavoriteGiffIdsList ->
+                if (allFavoriteGiffIdsList.isNotEmpty())
+                    giffImageAdapter.updateFavIds(allFavoriteGiffIdsList)
+            }
+        )
     }
 
     private fun initViewModel() {
