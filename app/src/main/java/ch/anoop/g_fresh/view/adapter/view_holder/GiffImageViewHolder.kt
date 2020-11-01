@@ -50,10 +50,10 @@ class GiffImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             .load(currentGiffItem.images.fixed_width_downsampled.url)
             .apply(
                 RequestOptions()
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                     .centerCrop()
             )
-            .transition(DrawableTransitionOptions.withCrossFade(300))
+            .transition(DrawableTransitionOptions.withCrossFade(200))
             .into(gifImageView)
 
         gifTitle.text = currentGiffItem.title
