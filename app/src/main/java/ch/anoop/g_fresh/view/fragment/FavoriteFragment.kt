@@ -4,6 +4,8 @@ import android.app.Application
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -54,8 +56,13 @@ class FavoriteFragment : Fragment(), FavoriteClickListener {
 
     private fun startObservingDatabase() {
         favoriteFragmentViewModel.favGiffItemListLiveData.observe(
-            viewLifecycleOwner, { favoriteItemsList ->
+            viewLifecycleOwner,
+            { favoriteItemsList ->
                 giffImageAdapter.updateNewItems(favoriteItemsList, true)
+                hideProgressBar()
+                if (favoriteItemsList.isNullOrEmpty()) {
+                    showNoDataError()
+                }
             }
         )
     }
@@ -86,6 +93,26 @@ class FavoriteFragment : Fragment(), FavoriteClickListener {
             addItemDecoration(CustomDecorator())
             adapter = giffImageAdapter
         }
+    }
+
+    private fun showNoDataError() {
+        progressBar.visibility = GONE
+        giffRecyclerView.visibility = GONE
+        errorTextView.visibility = VISIBLE
+
+        errorTextView.text = getString(R.string.no_fav_prompt)
+        errorTextView.setCompoundDrawablesWithIntrinsicBounds(
+            R.drawable.ic_information,
+            0,
+            0,
+            0
+        )
+    }
+
+    private fun hideProgressBar() {
+        progressBar.visibility = GONE
+        giffRecyclerView.visibility = VISIBLE
+        errorTextView.visibility = GONE
     }
 
 }
