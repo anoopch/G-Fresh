@@ -115,7 +115,9 @@ class TrendingSearchFragment : Fragment(), FavoriteClickListener {
         searchView.visibility = VISIBLE
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
-                showProgressBar(true)
+                showView(progressBar, true)
+                showView(errorTextView, false)
+                showView(giffRecyclerView, false)
 
                 if (query.isEmpty()) {
                     viewModel.loadTrendingGiffs(0)
@@ -141,12 +143,15 @@ class TrendingSearchFragment : Fragment(), FavoriteClickListener {
         viewModel.viewStateChangeEvent.observe(viewLifecycleOwner, { state ->
             when (state) {
                 ViewState.LoadingNext, ViewState.LoadingFresh -> {
-                    showProgressBar(true)
+                    showView(progressBar, true)
+                    showView(errorTextView, false)
+                    showView(giffRecyclerView, true)
                 }
 
                 ViewState.LoadingComplete -> {
-                    showProgressBar(false)
-                    showRecyclerView(true)
+                    showView(progressBar, false)
+                    showView(errorTextView, false)
+                    showView(giffRecyclerView, true)
                 }
 
                 ViewState.NoData -> {
@@ -170,12 +175,14 @@ class TrendingSearchFragment : Fragment(), FavoriteClickListener {
 
     private fun startObservingChangesForData() {
         viewModel.dataUpdatedEvent.observe(viewLifecycleOwner, { state ->
-            showProgressBar(false)
+            showView(progressBar, false)
             when (state) {
 
                 is ApiResponseResult.LoadingComplete -> {
                     giffImageAdapter.updateNewItems(state.value.data, false)
-                    showRecyclerView(true)
+
+                    showView(errorTextView, false)
+                    showView(giffRecyclerView, true)
                 }
 
                 else -> {
@@ -186,10 +193,10 @@ class TrendingSearchFragment : Fragment(), FavoriteClickListener {
     }
 
     private fun showError(errorType: Int) {
-        errorTextView.visibility = VISIBLE
 
-        showRecyclerView(false)
-        showProgressBar(false)
+        showView(errorTextView, true)
+        showView(giffRecyclerView, false)
+        showView(progressBar, false)
 
         when (errorType) {
             errorTypeNoData -> {
@@ -216,14 +223,9 @@ class TrendingSearchFragment : Fragment(), FavoriteClickListener {
         }
     }
 
-    private fun showProgressBar(isVisible: Boolean) {
-        progressBar.visibility = if (isVisible) VISIBLE else INVISIBLE
+    private fun showView(viewToToggleVisibility: View, isVisible: Boolean) {
+        viewToToggleVisibility.visibility = if (isVisible) VISIBLE else INVISIBLE
     }
-
-    private fun showRecyclerView(isVisible: Boolean) {
-        giffRecyclerView.visibility = if (isVisible) VISIBLE else INVISIBLE
-    }
-
 
     private fun View.hideKeyboard() {
         val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
