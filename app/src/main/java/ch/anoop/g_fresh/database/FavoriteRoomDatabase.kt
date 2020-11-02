@@ -6,10 +6,18 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import ch.anoop.g_fresh.api.GiffItem
 
+/**
+ * Class representing the singleton instance of the DB.
+ *
+ * Database Version, Name and Dao are added here.
+ */
+
 @Database(entities = [GiffItem::class], version = 1, exportSchema = false)
 abstract class FavoriteRoomDatabase : RoomDatabase() {
 
     companion object {
+        private const val dataBaseName: String = "fav_database.db"
+
         // Singleton prevents multiple instances of database opening at the
         // same time.
         @Volatile
@@ -22,7 +30,7 @@ abstract class FavoriteRoomDatabase : RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     FavoriteRoomDatabase::class.java,
-                    "fav_database"
+                    dataBaseName
                 )
                     .fallbackToDestructiveMigrationOnDowngrade()
                     .fallbackToDestructiveMigration()

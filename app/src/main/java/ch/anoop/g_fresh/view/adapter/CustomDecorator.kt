@@ -6,6 +6,10 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ch.anoop.g_fresh.R
 
+/**
+ *  Decorator class for use with RecyclerView
+ *          -   Allows setting gap in between items in the layout
+ */
 class CustomDecorator : RecyclerView.ItemDecoration() {
 
     private var offset: Int? = null
