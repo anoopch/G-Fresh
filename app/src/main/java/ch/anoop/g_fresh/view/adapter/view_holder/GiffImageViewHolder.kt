@@ -8,8 +8,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import ch.anoop.g_fresh.R
 import ch.anoop.g_fresh.api.GiffItem
+import ch.anoop.g_fresh.view.custom.BounceInterpolator
 import ch.anoop.g_fresh.view.custom.FavoriteClickListener
-import ch.anoop.g_fresh.view.custom.MyBounceInterpolator
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
@@ -41,11 +41,12 @@ class GiffImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             val myAnim: Animation = loadAnimation(favImageView.context, R.anim.fav_view_bounce)
 
             // Use bounce interpolator with amplitude 0.3 and frequency 24.0
-            val interpolator = MyBounceInterpolator(0.3, 24.0)
+            val interpolator = BounceInterpolator(0.3, 24.0)
             myAnim.interpolator = interpolator
 
             favImageView.startAnimation(myAnim)
         }
+        // Set image selected based on isFavorite flag
         favImageView.imageResource =
             if (currentGiffItem.isFavorite) R.drawable.ic_favorite else R.drawable.ic_no_favorite
 

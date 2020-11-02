@@ -28,37 +28,51 @@ import java.net.UnknownHostException
 
 class TrendingSearchFragmentViewModel(application: Application) : AndroidViewModel(application) {
 
+    // LOG TAG
     private val logTag: String = "TREND_FRAG_V_MODEL"
+
+    // The last submitted query, maintained for pagination. null means Trending
     private var query: String? = null
+
+    // Disposable Container used for background tasks
     private val compositeDisposable = CompositeDisposable()
 
+    // The instance of Database Repository Singleton
     private val databaseRepository by lazy {
         val favoriteGiffsDao =
             FavoriteRoomDatabase.getDatabase(application).favoriteGiffsDao()
         FavoriteDatabaseRepository(favoriteGiffsDao)
     }
 
+    // The instance of Restful API Repository
     private val apiRepository by lazy {
         val api = RetrofitSingleton.getGiphyApiService()
         Repository(RestfulDataSource(api))
     }
 
+    // API response monitoring
     private val _dataEvent by lazy { SingleMutableLiveData<ApiResponseResult<GiphyResponse>>() }
     val dataUpdatedEvent: LiveData<ApiResponseResult<GiphyResponse>> get() = _dataEvent
 
+    // View State monitoring
     private val _viewStateEvent by lazy { SingleMutableLiveData<ViewState>() }
     val viewStateChangeEvent: LiveData<ViewState> get() = _viewStateEvent
 
+    // Fav List monitoring
     val allFavoriteGiffIdsLiveData: LiveData<List<String>> =
         databaseRepository.getAllFavoriteGiffIds
 
+    // Clear the Disposable Container when the Fragment is destroyed and the ViewModel is cleared
     override fun onCleared() {
         super.onCleared()
         compositeDisposable.clear()
     }
 
+    // Add to add tasks to the Disposable
     private fun Disposable.composeDisposable() = compositeDisposable.add(this)
 
+    // Triggered when new Search or Trending API request completed successfully
+    // Empty will fire NoData, Success will transfer data to Fragment and later to the Adapter
     private fun onApiRequestComplete(trending: GiphyResponse) {
         if (trending.data.isEmpty()) {
             _viewStateEvent.postValue(ViewState.NoData)
@@ -67,6 +81,8 @@ class TrendingSearchFragmentViewModel(application: Application) : AndroidViewMod
         }
     }
 
+    // Triggered when new Search or Trending API request failed,
+    // View's state will be updated accordingly
     private fun onError(error: Throwable) {
         when (error) {
             is UnknownHostException -> {
@@ -89,6 +105,7 @@ class TrendingSearchFragmentViewModel(application: Application) : AndroidViewMod
     }
 
 
+    // Fires a search API request
     fun loadSearchForGiff(newQuery: String, offset: Int) {
         query = newQuery
         viewModelScope.launch(Dispatchers.IO) {
@@ -100,6 +117,7 @@ class TrendingSearchFragmentViewModel(application: Application) : AndroidViewMod
         }
     }
 
+    // Fires a Trending API request
     fun loadTrendingGiffs(offset: Int) {
         query = null
         viewModelScope.launch(Dispatchers.IO) {
@@ -111,6 +129,10 @@ class TrendingSearchFragmentViewModel(application: Application) : AndroidViewMod
         }
     }
 
+    // Handles FavButton click -- checks of the currently clicked item is in Database
+    // if present in database it will be removed
+    // if not present in database it will be added newly
+    // Both above triggers LiveData updates
     fun updateFavoriteButtonClicked(clickedGiffImage: GiffItem) {
         viewModelScope.launch(Dispatchers.IO) {
             val existingDbId: String? = databaseRepository.checkIfExists(clickedGiffImage.id)
@@ -122,6 +144,10 @@ class TrendingSearchFragmentViewModel(application: Application) : AndroidViewMod
         }
     }
 
+    // Pagination Scroll -- updates UI's state to loading and fires a new API call
+    // If query is null or blank, Trending API is fired with offset as current data count
+    // If query is not null and has one or more characters, then
+    //          Search API is fired with last query along with offset as current data count
     fun listScrolled(totalItemCount: Int) {
         viewModelScope.launch(Dispatchers.IO) {
 

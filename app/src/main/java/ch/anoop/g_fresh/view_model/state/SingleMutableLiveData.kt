@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicBoolean
  */
 class SingleMutableLiveData<T> : MutableLiveData<T>() {
 
-    // State of the result weather completed or still in-progress
+    // State of the result weather request is completed or still in-progress
     private val isInProgress = AtomicBoolean(false)
 
     @MainThread

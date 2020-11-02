@@ -53,5 +53,8 @@ object RetrofitSingleton {
         return okHttpClientBuilder.build()
     }
 
+    /**
+     * Gets the RetroFit API service with the API endpoints
+     */
     fun getGiphyApiService(): GiphyApiService = retrofit.create(GiphyApiService::class.java)
 }

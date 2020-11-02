@@ -28,19 +28,28 @@ import ch.anoop.g_fresh.view_model.state.ViewState
 
 class TrendingSearchFragment : Fragment(), FavoriteClickListener {
 
+    // Constants for different types of errors
     private val errorTypeNormal: Int = 1
     private val errorTypeAPI: Int = 2
     private val errorTypeNoData: Int = 3
     private val errorTypeNotReachable: Int = 4
 
-    private val giffImageAdapter by lazy { GiffImageAdapter(this) }
+    // ViewModel for this Fragment
     private lateinit var viewModel: TrendingSearchFragmentViewModel
 
+    // Views in the Layout
     private lateinit var progressBar: View
     private lateinit var giffRecyclerView: RecyclerView
     private lateinit var errorTextView: TextView
     private lateinit var searchView: SearchView
 
+    // Adapter of the RecyclerView showing the Giffs - Search or Trending
+    private val giffImageAdapter by lazy { GiffImageAdapter(this) }
+
+    // Interface implementation for handling click of Fav button
+    // Fired from ViewHolder, then Adapter, then Fragment(Here), Then ViewModel
+    // Then the view model will pass to the Database Repository for insert/delete
+    // This will fire the LiveData observer with new Data
     override fun onFavoriteButtonClicked(clickedGiffImage: GiffItem, adapterPosition: Int) {
         viewModel.updateFavoriteButtonClicked(clickedGiffImage)
     }
@@ -52,11 +61,17 @@ class TrendingSearchFragment : Fragment(), FavoriteClickListener {
         return inflater.inflate(R.layout.fragment_search_trending_fav, container, false)
     }
 
+    // After inflating the layout above, callback comes here. Just initialise the views here.
     override fun onViewCreated(inflatedView: View, savedInstanceState: Bundle?) {
         super.onViewCreated(inflatedView, savedInstanceState)
         initViews(inflatedView)
     }
 
+
+    // After the callback above, init the ViewModel, RecyclerView and
+    // start observing the Favorite LiveData, ViewState, API response State
+    // Also setup Search View
+    // After all done load a fresh Trending Giffs fetch
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         initViewModel()
@@ -71,6 +86,7 @@ class TrendingSearchFragment : Fragment(), FavoriteClickListener {
         viewModel.loadTrendingGiffs(0)
     }
 
+    // Setup the ViewModel
     private fun initViewModel() {
         viewModel = ViewModelProvider(
             this,
@@ -78,6 +94,7 @@ class TrendingSearchFragment : Fragment(), FavoriteClickListener {
         ).get(TrendingSearchFragmentViewModel::class.java)
     }
 
+    // Initialise all the views required for the Fragment
     private fun initViews(inflatedView: View) {
         progressBar = inflatedView.findViewById(R.id.giffy_loading_progress_bar)
         errorTextView = inflatedView.findViewById(R.id.giffy_error_info_txt_view)
@@ -85,6 +102,10 @@ class TrendingSearchFragment : Fragment(), FavoriteClickListener {
         searchView = inflatedView.findViewById(R.id.giffy_search_view)
     }
 
+    /**
+     * Setup the RecyclerView - LayoutManager, ItemDecorations and adapter are set here
+     * Pagination Scroll listener is also added here
+     */
     private fun initRecyclerView() {
 
         val staggeredGridLayoutManager =
@@ -103,6 +124,7 @@ class TrendingSearchFragment : Fragment(), FavoriteClickListener {
         }
     }
 
+    // Observe the LiveData of current Fav (only Ids)
     private fun startObservingChangesForFav() {
         viewModel.allFavoriteGiffIdsLiveData.observe(
             viewLifecycleOwner, { allFavoriteGiffIdsList ->
@@ -111,11 +133,20 @@ class TrendingSearchFragment : Fragment(), FavoriteClickListener {
         )
     }
 
+    /**
+     * Setup the search View - Hidden by default
+     *
+     * Add listener for text change.
+     *
+     * Empty string - Trending search; Else entered text is searched
+     */
     private fun setupSearchView() {
         searchView.visibility = VISIBLE
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
-                showProgressBar(true)
+                showView(progressBar, true)
+                showView(errorTextView, false)
+                showView(giffRecyclerView, false)
 
                 if (query.isEmpty()) {
                     viewModel.loadTrendingGiffs(0)
@@ -137,16 +168,26 @@ class TrendingSearchFragment : Fragment(), FavoriteClickListener {
         })
     }
 
+    /**
+     * Observe for changes in UI State
+     *
+     *  No Data
+     *  Loading - LoadingFresh, LoadingComplete, LoadingNext
+     *  Error - ServerNotReachable, InvalidResponse, GenericError
+     */
     private fun startObservingChangesForUI() {
         viewModel.viewStateChangeEvent.observe(viewLifecycleOwner, { state ->
             when (state) {
                 ViewState.LoadingNext, ViewState.LoadingFresh -> {
-                    showProgressBar(true)
+                    showView(progressBar, true)
+                    showView(errorTextView, false)
+                    showView(giffRecyclerView, true)
                 }
 
                 ViewState.LoadingComplete -> {
-                    showProgressBar(false)
-                    showRecyclerView(true)
+                    showView(progressBar, false)
+                    showView(errorTextView, false)
+                    showView(giffRecyclerView, true)
                 }
 
                 ViewState.NoData -> {
@@ -168,14 +209,19 @@ class TrendingSearchFragment : Fragment(), FavoriteClickListener {
         })
     }
 
+    /**
+     * Observes for changes in Data obtained from Restful API server
+     */
     private fun startObservingChangesForData() {
         viewModel.dataUpdatedEvent.observe(viewLifecycleOwner, { state ->
-            showProgressBar(false)
+            showView(progressBar, false)
             when (state) {
 
                 is ApiResponseResult.LoadingComplete -> {
                     giffImageAdapter.updateNewItems(state.value.data, false)
-                    showRecyclerView(true)
+
+                    showView(errorTextView, false)
+                    showView(giffRecyclerView, true)
                 }
 
                 else -> {
@@ -185,11 +231,15 @@ class TrendingSearchFragment : Fragment(), FavoriteClickListener {
         })
     }
 
+    /**
+     * Shows different types of errors - No Data, Server not reachable, API parsing error,
+     * Network failure ..etc
+     */
     private fun showError(errorType: Int) {
-        errorTextView.visibility = VISIBLE
 
-        showRecyclerView(false)
-        showProgressBar(false)
+        showView(errorTextView, true)
+        showView(giffRecyclerView, false)
+        showView(progressBar, false)
 
         when (errorType) {
             errorTypeNoData -> {
@@ -216,15 +266,16 @@ class TrendingSearchFragment : Fragment(), FavoriteClickListener {
         }
     }
 
-    private fun showProgressBar(isVisible: Boolean) {
-        progressBar.visibility = if (isVisible) VISIBLE else INVISIBLE
+    /**
+     * Shows or hides the viewToToggleVisibility view based on the isVisible flag
+     */
+    private fun showView(viewToToggleVisibility: View, isVisible: Boolean) {
+        viewToToggleVisibility.visibility = if (isVisible) VISIBLE else INVISIBLE
     }
 
-    private fun showRecyclerView(isVisible: Boolean) {
-        giffRecyclerView.visibility = if (isVisible) VISIBLE else INVISIBLE
-    }
-
-
+    /**
+     * Hides the keyboard from screen
+     */
     private fun View.hideKeyboard() {
         val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(windowToken, 0)

@@ -1,7 +1,11 @@
 package ch.anoop.g_fresh.view_model.state
 
 /**
- * Represents UI states - No Data, Error and Loading (LoadingFresh, LoadingComplete, LoadingNext)
+ * Represents UI states
+ *
+ *  No Data
+ *  Loading - LoadingFresh, LoadingComplete, LoadingNext
+ *  Error - ServerNotReachable, InvalidResponse, GenericError
  */
 
 sealed class ViewState {
