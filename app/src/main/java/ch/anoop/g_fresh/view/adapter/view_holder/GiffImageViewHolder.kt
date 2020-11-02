@@ -46,6 +46,7 @@ class GiffImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
             favImageView.startAnimation(myAnim)
         }
+        // Set image selected based on isFavorite flag
         favImageView.imageResource =
             if (currentGiffItem.isFavorite) R.drawable.ic_favorite else R.drawable.ic_no_favorite
 

@@ -24,6 +24,10 @@ class PaginationScrollListener(
     private var lastVisibleItemPosition: Int? = null
     private var totalItemCount: Int? = null
 
+    /**
+     * Scroll listener checking if the no of items visible is less-than the threshold
+     * fires the data fetch request only when the threshold is breached
+     */
     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
         super.onScrolled(recyclerView, dx, dy)
         if (isLastItemDisplaying(recyclerView)) {
@@ -39,7 +43,7 @@ class PaginationScrollListener(
         }
     }
 
-    //return true if it's last item visited
+    //return true if last item in the entire data is visible to the user
     private fun isLastItemDisplaying(recyclerView: RecyclerView): Boolean {
         if (recyclerView.adapter!!.itemCount != 0) {
             // get maximum element within the list
@@ -50,7 +54,8 @@ class PaginationScrollListener(
         return false
     }
 
-    //get last item
+    // get the last item that's visible to the user now. THis need not be the last item
+    // in the entire data
     private fun getLastVisibleItem(recyclerView: RecyclerView): Int {
         val lastVisibleItemPositions =
             (recyclerView.layoutManager as StaggeredGridLayoutManager).findLastVisibleItemPositions(

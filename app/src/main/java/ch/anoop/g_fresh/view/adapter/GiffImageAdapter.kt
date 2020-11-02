@@ -9,12 +9,19 @@ import ch.anoop.g_fresh.view.adapter.view_holder.GiffImageViewHolder
 import ch.anoop.g_fresh.view.custom.FavoriteClickListener
 import okhttp3.internal.toImmutableList
 
+/**
+ * Common adapter for showing the Giffs in Search/Trending Fragment and Fav Fragment
+ */
 
 class GiffImageAdapter(private val favoriteClickListener: FavoriteClickListener) :
     RecyclerView.Adapter<GiffImageViewHolder>(), FavoriteClickListener {
 
-    private var trendingGiffList = mutableListOf<GiffItem>()
-    private var allFavoriteGiffIdsList = mutableListOf<String>()
+    // displayedGiffList -- Contains the giffs currently presented to the user
+    private val displayedGiffList = mutableListOf<GiffItem>()
+
+    // favoriteGiffIdsList -- Ids of all the Giffs currently in the Fav table of the database
+    // Will be null for the Favorite Fragment
+    private val favoriteGiffIdsList = mutableListOf<String>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GiffImageViewHolder {
         return GiffImageViewHolder(
@@ -25,68 +32,86 @@ class GiffImageAdapter(private val favoriteClickListener: FavoriteClickListener)
         )
     }
 
-    override fun getItemCount() = trendingGiffList.size
+    override fun getItemCount() = displayedGiffList.size
 
     override fun onBindViewHolder(holder: GiffImageViewHolder, position: Int) {
 
-        if (allFavoriteGiffIdsList.isNotEmpty()) {
-            trendingGiffList[position].isFavorite =
-                allFavoriteGiffIdsList.contains(trendingGiffList[position].id)
+        // When newly adding an item, if the favoriteGiffIdsList is not empty,
+        // check if the current Giff is already in Fav list, if so
+        // --> Set isFavorite flag to true and view holder will update UI accordingly
+        if (favoriteGiffIdsList.isNotEmpty()) {
+            displayedGiffList[position].isFavorite =
+                favoriteGiffIdsList.contains(displayedGiffList[position].id)
         }
 
-        holder.bind(trendingGiffList[position], this)
+        holder.bind(displayedGiffList[position], this)
     }
 
+    // Call from ViewHolder lands here
+    // necessary changes to data set is done and updated to the DB
+    // Note - No UI update here
     override fun onFavoriteButtonClicked(clickedGiffImage: GiffItem, adapterPosition: Int) {
         clickedGiffImage.isFavorite = !clickedGiffImage.isFavorite
         favoriteClickListener.onFavoriteButtonClicked(clickedGiffImage, adapterPosition)
     }
 
+    // Call from Fragment to update latest items to be displayed in the RecyclerView
+    // boolean flag denotes append to existing List or Fresh load
     fun updateNewItems(newTrends: List<GiffItem>, clearExistingList: Boolean) {
 
         if (clearExistingList) {
-            trendingGiffList.clear()
+            displayedGiffList.clear()
             notifyDataSetChanged()
         }
-        trendingGiffList.addAll(newTrends)
+        displayedGiffList.addAll(newTrends)
 
-        // Remove duplicates
-        val set = trendingGiffList.toImmutableList()
-        trendingGiffList.clear()
+        // Remove duplicates -- Some times the new API response and existing data has duplicate
+        // Compare with id and remove
+        val set = displayedGiffList.toImmutableList()
+        displayedGiffList.clear()
 
-        trendingGiffList.addAll(
+        displayedGiffList.addAll(
             set.distinctBy { it.id }
         )
 
-        notifyItemRangeInserted(trendingGiffList.size + 1, newTrends.size)
+        //After filtering and add only the unique items  notify the updated ones
+        notifyItemRangeInserted(displayedGiffList.size + 1, newTrends.size)
     }
 
+    /**
+     * To update the current fav items, this is used to show favorite Giffs in red and
+     *remove red from non-favorite Giffs when the action is performed in Favorite fragment.
+     */
     fun updateFavIds(allFavoriteGiffIdsList: List<String>) {
+        // Contains items that are removed from favorites
+        val deletedElements = this.favoriteGiffIdsList.minus(allFavoriteGiffIdsList)
 
-        val deletedElements = this.allFavoriteGiffIdsList.minus(allFavoriteGiffIdsList)
-        val addedElements = allFavoriteGiffIdsList.minus(this.allFavoriteGiffIdsList)
+        // Contains items that are added to favorites
+        val addedElements = allFavoriteGiffIdsList.minus(this.favoriteGiffIdsList)
 
-        this.allFavoriteGiffIdsList.clear()
-        this.allFavoriteGiffIdsList.addAll(allFavoriteGiffIdsList)
+        // Clear existing Fav list and update with the latest list
+        this.favoriteGiffIdsList.clear()
+        this.favoriteGiffIdsList.addAll(allFavoriteGiffIdsList)
 
+        // To update UI for removed items - update isFavorite flag to false and refresh that Giff
+        // Repeat for all such deleted items
         for (eachDeletedItem in deletedElements) {
             val index =
-                trendingGiffList.indexOfFirst { it.id == eachDeletedItem } // -1 if not found
+                displayedGiffList.indexOfFirst { it.id == eachDeletedItem } // -1 if not found
             if (index in 0 until itemCount) {
-                trendingGiffList[index].isFavorite = false
+                displayedGiffList[index].isFavorite = false
                 notifyItemChanged(index)
             }
         }
 
+        // To update UI for new added items - update isFavorite flag to true and refresh that Giff
+        // Repeat for all such newly added items
         for (eachAddedItem in addedElements) {
-            val index = trendingGiffList.indexOfFirst { it.id == eachAddedItem } // -1 if not found
+            val index = displayedGiffList.indexOfFirst { it.id == eachAddedItem } // -1 if not found
             if (index in 0 until itemCount) {
-                trendingGiffList[index].isFavorite = true
+                displayedGiffList[index].isFavorite = true
                 notifyItemChanged(index)
             }
         }
-
-
     }
-
 }
