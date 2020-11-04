@@ -2,10 +2,9 @@ package ch.anoop.g_fresh.view.activity
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.viewpager.widget.ViewPager
 import ch.anoop.g_fresh.R
 import ch.anoop.g_fresh.view.adapter.TabAdapter
-import com.google.android.material.tabs.TabLayout
+import kotlinx.android.synthetic.main.activity_main.*
 
 /**
  * Single Main Activity class
@@ -26,13 +25,10 @@ class MainActivity : AppCompatActivity() {
      * Also sets the tab title and icon
      */
     private fun setupTabsWithViewPager() {
-        val viewPager: ViewPager = findViewById(R.id.view_pager)
-        viewPager.adapter = TabAdapter(this, supportFragmentManager)
+        view_pager.adapter = TabAdapter(this, supportFragmentManager)
+        tabs.setupWithViewPager(view_pager)
 
-        val tabLayout: TabLayout = findViewById(R.id.tabs)
-        tabLayout.setupWithViewPager(viewPager)
-
-        tabLayout.getTabAt(0)?.setIcon(R.drawable.ic_trending)
-        tabLayout.getTabAt(1)?.setIcon(R.drawable.ic_favorite)
+        tabs.getTabAt(0)?.setIcon(R.drawable.ic_trending)
+        tabs.getTabAt(1)?.setIcon(R.drawable.ic_favorite)
     }
 }

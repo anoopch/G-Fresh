@@ -7,11 +7,8 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
-import android.widget.ProgressBar
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ch.anoop.g_fresh.R
 import ch.anoop.g_fresh.api.GiffItem
@@ -19,6 +16,7 @@ import ch.anoop.g_fresh.view.adapter.CustomDecorator
 import ch.anoop.g_fresh.view.adapter.GiffImageAdapter
 import ch.anoop.g_fresh.view.custom.FavoriteClickListener
 import ch.anoop.g_fresh.view_model.FavoriteFragmentViewModel
+import kotlinx.android.synthetic.main.fragment_search_trending_fav.*
 
 /**
  * Fragment showing the list of all the Favorite Giffs added by the User
@@ -28,11 +26,6 @@ class FavoriteFragment : Fragment(), FavoriteClickListener {
 
     // ViewModel for this Fragment
     private lateinit var favoriteFragmentViewModel: FavoriteFragmentViewModel
-
-    // Views in the Layout
-    private lateinit var progressBar: ProgressBar
-    private lateinit var giffRecyclerView: RecyclerView
-    private lateinit var errorTextView: TextView
 
     // Adapter of the RecyclerView showing the user's Favorite Giffs
     private val giffImageAdapter by lazy { GiffImageAdapter(this) }
@@ -51,12 +44,6 @@ class FavoriteFragment : Fragment(), FavoriteClickListener {
         return inflater.inflate(R.layout.fragment_search_trending_fav, container, false)
     }
 
-    // After inflating the layout above, callback comes here. Just initialise the views here.
-    override fun onViewCreated(inflatedView: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(inflatedView, savedInstanceState)
-        initViews(inflatedView)
-    }
-
     // After the callback above, init the ViewModel, RecyclerView and
     // start observing the Favorite LiveData of the items in favorite table in database
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -64,13 +51,6 @@ class FavoriteFragment : Fragment(), FavoriteClickListener {
         initViewModel()
         initRecyclerView()
         startObservingDatabase()
-    }
-
-    // Initialise all the views required for the Fragment
-    private fun initViews(inflatedView: View) {
-        progressBar = inflatedView.findViewById(R.id.giffy_loading_progress_bar)
-        errorTextView = inflatedView.findViewById(R.id.giffy_error_info_txt_view)
-        giffRecyclerView = inflatedView.findViewById(R.id.giffy_recycler_view)
     }
 
     // Setup the ViewModel
@@ -90,7 +70,7 @@ class FavoriteFragment : Fragment(), FavoriteClickListener {
             StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         staggeredGridLayoutManager.gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_NONE
 
-        giffRecyclerView.apply {
+        giffy_recycler_view.apply {
             layoutManager = staggeredGridLayoutManager
             addItemDecoration(CustomDecorator())
             adapter = giffImageAdapter
@@ -114,25 +94,26 @@ class FavoriteFragment : Fragment(), FavoriteClickListener {
 
     // Shows no data yet in favs error
     private fun showNoDataError() {
-        progressBar.visibility = GONE
-        giffRecyclerView.visibility = GONE
-        errorTextView.visibility = VISIBLE
-
-        errorTextView.text = getString(R.string.no_fav_prompt)
-        errorTextView.setCompoundDrawablesWithIntrinsicBounds(
-            R.drawable.ic_information,
-            0,
-            0,
-            0
-        )
+        giffy_loading_progress_bar.visibility = GONE
+        giffy_recycler_view.visibility = GONE
+        giffy_error_info_txt_view.apply {
+            visibility = VISIBLE
+            text = getString(R.string.no_fav_prompt)
+            setCompoundDrawablesWithIntrinsicBounds(
+                R.drawable.ic_information,
+                0,
+                0,
+                0
+            )
+        }
     }
 
     // Hides progress bar after loading from db,
     // -- ideally will not be visible to user; Hidden quickly
     private fun hideProgressBar() {
-        progressBar.visibility = GONE
-        giffRecyclerView.visibility = VISIBLE
-        errorTextView.visibility = GONE
+        giffy_loading_progress_bar.visibility = GONE
+        giffy_recycler_view.visibility = VISIBLE
+        giffy_error_info_txt_view.visibility = GONE
     }
 
 }
