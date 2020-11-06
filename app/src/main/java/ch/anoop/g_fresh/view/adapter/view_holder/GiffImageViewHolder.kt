@@ -34,21 +34,24 @@ class GiffImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     fun bind(currentGiffItem: GiffItem, favoriteClickListener: FavoriteClickListener) {
 
         // Fav button click
-        favImageView.setOnClickListener {
-            favoriteClickListener.onFavoriteButtonClicked(currentGiffItem, adapterPosition)
+        favImageView.apply {
 
-            // Animation for button
-            val myAnim: Animation = loadAnimation(favImageView.context, R.anim.fav_view_bounce)
+            setOnClickListener {
+                favoriteClickListener.onFavoriteButtonClicked(currentGiffItem, adapterPosition)
 
-            // Use bounce interpolator with amplitude 0.3 and frequency 24.0
-            val interpolator = BounceInterpolator(0.3, 24.0)
-            myAnim.interpolator = interpolator
+                // Animation for button
+                val myAnim: Animation = loadAnimation(favImageView.context, R.anim.fav_view_bounce)
 
-            favImageView.startAnimation(myAnim)
+                // Use bounce interpolator with amplitude 0.3 and frequency 24.0
+                myAnim.interpolator = BounceInterpolator(0.3, 24.0)
+
+                favImageView.startAnimation(myAnim)
+            }
+
+            // Set image selected based on isFavorite flag
+            imageResource =
+                if (currentGiffItem.isFavorite) R.drawable.ic_favorite else R.drawable.ic_no_favorite
         }
-        // Set image selected based on isFavorite flag
-        favImageView.imageResource =
-            if (currentGiffItem.isFavorite) R.drawable.ic_favorite else R.drawable.ic_no_favorite
 
         // Giff Loading using Glide
         Glide.with(itemView.context)

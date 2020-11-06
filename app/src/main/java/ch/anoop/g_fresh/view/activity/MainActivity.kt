@@ -26,9 +26,10 @@ class MainActivity : AppCompatActivity() {
      */
     private fun setupTabsWithViewPager() {
         view_pager.adapter = TabAdapter(this, supportFragmentManager)
-        tabs.setupWithViewPager(view_pager)
-
-        tabs.getTabAt(0)?.setIcon(R.drawable.ic_trending)
-        tabs.getTabAt(1)?.setIcon(R.drawable.ic_favorite)
+        tabs.apply {
+            setupWithViewPager(view_pager)
+            getTabAt(0)?.setIcon(R.drawable.ic_trending)
+            getTabAt(1)?.setIcon(R.drawable.ic_favorite)
+        }
     }
 }
